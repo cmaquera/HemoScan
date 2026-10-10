@@ -7,12 +7,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.shadow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CameraAlt
@@ -76,8 +81,12 @@ import com.anemia.detection.theme.ClinicalPrimary
 import com.anemia.detection.theme.ClinicalPrimaryDark
 import com.anemia.detection.theme.ClinicalTextSecondary
 import com.anemia.detection.theme.SeverityMild
+import com.anemia.detection.theme.SeverityMildContainer
+import com.anemia.detection.theme.SeverityModerate
 import com.anemia.detection.theme.SeverityNormal
 import com.anemia.detection.theme.SeverityNormalContainer
+import com.anemia.detection.theme.SeveritySevere
+import com.anemia.detection.theme.SeveritySevereContainer
 import com.anemia.detection.ui.components.NutritionGuideDialog
 import com.anemia.detection.ui.components.VisualCaptureGuideDialog
 import java.text.SimpleDateFormat
@@ -424,12 +433,22 @@ fun HomeScreen(
                         AnemiaSeverity.SEVERE -> Color(0xFFDC2626)
                     }
 
+                    val severityBg = when (severity) {
+                        AnemiaSeverity.NORMAL -> SeverityNormalContainer
+                        AnemiaSeverity.MILD -> SeverityMildContainer
+                        AnemiaSeverity.MODERATE -> Color(0xFFFFF7ED)
+                        AnemiaSeverity.SEVERE -> SeveritySevereContainer
+                    }
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.weight(1f, fill = false),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Box(
                                 modifier = Modifier
                                     .size(38.dp)
@@ -459,10 +478,12 @@ fun HomeScreen(
                             }
                         }
 
+                        Spacer(modifier = Modifier.width(8.dp))
+
                         Box(
                             modifier = Modifier
-                                .background(SeverityNormalContainer, RoundedCornerShape(12.dp))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .background(severityBg, RoundedCornerShape(12.dp))
+                                .padding(horizontal = 9.dp, vertical = 5.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(
@@ -470,7 +491,7 @@ fun HomeScreen(
                                         .size(6.dp)
                                         .background(severityColor, CircleShape)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text(
                                     text = severity.displayName,
                                     fontSize = 11.sp,
@@ -518,42 +539,67 @@ fun HomeScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            Box(
+                            // Escala Clínica Continua con Marcador de Posición Exacta
+                            val minScale = 6.0f
+                            val maxScale = 18.0f
+                            val hbFraction = ((hbValue.toFloat() - minScale) / (maxScale - minScale)).coerceIn(0.03f, 0.97f)
+
+                            val trackGradient = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color(0xFFDC2626), // Anemia Crítica / Severa (<8.0)
+                                    Color(0xFFEA580C), // Anemia Moderada (8.0 - 10.9)
+                                    Color(0xFFD97706), // Anemia Leve (11.0 - 11.9)
+                                    Color(0xFF059669)  // Rango Normal Óptimo (>=12.0)
+                                )
+                            )
+
+                            BoxWithConstraints(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(7.dp)
-                                    .background(Color(0xFFE2E8F0), RoundedCornerShape(4.dp))
+                                    .height(24.dp),
+                                contentAlignment = Alignment.CenterStart
                             ) {
-                                Row(modifier = Modifier.fillMaxSize()) {
+                                val totalWidth = maxWidth
+                                val pinSize = 16.dp
+
+                                // Barra de gradiente clínico
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .background(trackGradient, RoundedCornerShape(4.dp))
+                                )
+
+                                // Indicador / Pin de posición de la medición
+                                val pinOffset = (totalWidth - pinSize) * hbFraction
+                                Box(
+                                    modifier = Modifier
+                                        .offset(x = pinOffset)
+                                        .size(pinSize)
+                                        .shadow(3.dp, CircleShape)
+                                        .background(Color.White, CircleShape)
+                                        .border(2.5.dp, severityColor, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
                                     Box(
                                         modifier = Modifier
-                                            .weight(0.25f)
-                                            .background(Color(0xFFDC2626), RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.25f)
-                                            .background(Color(0xFFD97706))
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.50f)
-                                            .background(Color(0xFF059669), RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
+                                            .size(5.dp)
+                                            .background(severityColor, CircleShape)
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Bajo (<11)", fontSize = 10.sp, color = ClinicalTextSecondary)
-                                Text("Leve (11-12)", fontSize = 10.sp, color = ClinicalTextSecondary)
-                                Text("Óptimo (≥12)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = SeverityNormal)
+                                Text("Anemia (<11.0)", fontSize = 10.sp, color = Color(0xFFDC2626), fontWeight = FontWeight.SemiBold)
+                                Text("Límite (11-12)", fontSize = 10.sp, color = Color(0xFFD97706), fontWeight = FontWeight.SemiBold)
+                                Text("Normal (≥12.0)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF059669))
                             }
                         }
                     }
@@ -688,35 +734,58 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 5. Accesos Rápidos Funcionales
+            // 5. Accesos Rápidos Funcionales (Perfectamente nivelados y alineados)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Card(
                     modifier = Modifier
                         .weight(1f)
+                        .fillMaxHeight()
                         .clickable { showNutritionDialog = true },
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = ClinicalCardLowest),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(34.dp)
+                                .size(36.dp)
                                 .background(ClinicalContainer, RoundedCornerShape(8.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Restaurant, contentDescription = null, tint = ClinicalPrimary, modifier = Modifier.size(18.dp))
+                            Icon(
+                                imageVector = Icons.Default.Restaurant,
+                                contentDescription = null,
+                                tint = ClinicalPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text("Alimentos con Hierro", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = ClinicalOnSurface)
-                            Text("Guía nutricional", fontSize = 10.sp, color = ClinicalTextSecondary)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Alimentos con Hierro",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = ClinicalOnSurface,
+                                maxLines = 2,
+                                lineHeight = 13.sp
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Guía nutricional",
+                                fontSize = 10.sp,
+                                color = ClinicalTextSecondary,
+                                maxLines = 1
+                            )
                         }
                     }
                 }
@@ -724,27 +793,48 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier
                         .weight(1f)
+                        .fillMaxHeight()
                         .clickable { shareSummary() },
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = ClinicalCardLowest),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(34.dp)
+                                .size(36.dp)
                                 .background(ClinicalContainer, RoundedCornerShape(8.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = ClinicalPrimary, modifier = Modifier.size(18.dp))
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                tint = ClinicalPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text("Compartir Resumen", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = ClinicalOnSurface)
-                            Text("Enviar por WhatsApp", fontSize = 10.sp, color = ClinicalTextSecondary)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Compartir Resumen",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = ClinicalOnSurface,
+                                maxLines = 2,
+                                lineHeight = 13.sp
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Enviar reporte",
+                                fontSize = 10.sp,
+                                color = ClinicalTextSecondary,
+                                maxLines = 1
+                            )
                         }
                     }
                 }

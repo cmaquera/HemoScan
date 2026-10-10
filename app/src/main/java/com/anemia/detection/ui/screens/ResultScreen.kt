@@ -17,11 +17,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import android.content.Intent
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.ui.platform.LocalContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
@@ -64,9 +71,6 @@ import com.anemia.detection.theme.ClinicalPrimary
 import com.anemia.detection.theme.ClinicalTextSecondary
 import com.anemia.detection.theme.SeverityNormal
 import com.anemia.detection.ui.components.HemoglobinGauge
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +81,25 @@ fun ResultScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    fun shareResult() {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            val dateFormatted = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(result.timestamp))
+            val message = "📊 *Reporte de Chequeo HemoScan AI*\n" +
+                    "Nivel de Hemoglobina: ${String.format(Locale.US, "%.1f", result.hemoglobinLevel)} g/dL\n" +
+                    "Resultado: ${result.severity.displayName}\n" +
+                    "Fecha: $dateFormatted\n" +
+                    "Protocolo: ${if (result.isMultiShot) "🔬 Clínico (4 tomas)" else "⚡ Rápido (1 toma)"}\n" +
+                    "Confianza: ${(result.confidence * 100).toInt()}%\n\n" +
+                    "_Chequeo preliminar no invasivo. Consulta con un profesional de la salud._"
+            putExtra(Intent.EXTRA_TEXT, message)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "Compartir resultado de chequeo")
+        context.startActivity(shareIntent)
+    }
 
     Scaffold(
         topBar = {
@@ -441,7 +464,7 @@ fun ResultScreen(
 
             // 6. Botones de Acción al Final (Stitch Design)
             Button(
-                onClick = onBackClick,
+                onClick = { shareResult() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
@@ -452,7 +475,7 @@ fun ResultScreen(
                 Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Compartir o Guardar Resultado",
+                    text = "Compartir Resultado",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -464,7 +487,7 @@ fun ResultScreen(
                 onClick = onBackClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .heightIn(min = 52.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ClinicalCardLowest,
@@ -473,10 +496,10 @@ fun ResultScreen(
                 border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
             ) {
-                Icon(Icons.Default.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Hacer Chequeo a Otra Persona o a Mí Mismo",
+                    text = "Realizar un Nuevo Chequeo",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -488,7 +511,7 @@ fun ResultScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onBackClick() }
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 10.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -563,14 +586,23 @@ private fun DataRow(label: String, value: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
-        Text(label, fontSize = 12.sp, color = ClinicalTextSecondary)
         Text(
-            value,
+            text = label,
+            fontSize = 12.sp,
+            color = ClinicalTextSecondary,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = value,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            color = ClinicalOnSurface
+            color = ClinicalOnSurface,
+            textAlign = androidx.compose.ui.text.style.TextAlign.End,
+            modifier = Modifier.weight(1.8f)
         )
     }
 }
