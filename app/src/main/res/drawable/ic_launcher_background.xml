@@ -4,26 +4,33 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Deep Slate Navy Background -->
+    <!-- Clinical Precision Cobalt Blue Base (#1A56DB) -->
     <path
-        android:fillColor="#0F172A"
+        android:fillColor="#1A56DB"
         android:pathData="M0,0h108v108h-108z" />
 
-    <!-- Subtle radial glow behind the drop -->
+    <!-- Deep Blue Radial Depth Circle (#0E3A99) -->
     <path
-        android:fillColor="#1E293B"
+        android:fillColor="#0E3A99"
+        android:pathData="M54,54m-48,0a48,48 0,1 1,96 0a48,48 0,1 1,-96 0" />
+
+    <!-- Luminous AI Tech Center (#1347BE) -->
+    <path
+        android:fillColor="#1347BE"
+        android:pathData="M54,54m-36,0a36,36 0,1 1,72 0a36,36 0,1 1,-72 0" />
+
+    <!-- Concentric High-Tech Optical Calibration Rings (AI Cyan & Cobalt) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#7D9CFF"
+        android:strokeAlpha="0.35"
+        android:strokeWidth="0.8"
         android:pathData="M54,54m-42,0a42,42 0,1 1,84 0a42,42 0,1 1,-84 0" />
 
-    <!-- Concentric subtle calibration rings -->
     <path
         android:fillColor="#00000000"
-        android:strokeColor="#1E3A5F"
+        android:strokeColor="#38BDF8"
+        android:strokeAlpha="0.45"
         android:strokeWidth="0.8"
-        android:pathData="M54,54m-34,0a34,34 0,1 1,68 0a34,34 0,1 1,-68 0" />
-
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#1E3A5F"
-        android:strokeWidth="0.5"
-        android:pathData="M54,54m-46,0a46,46 0,1 1,92 0a46,46 0,1 1,-92 0" />
+        android:pathData="M54,54m-33,0a33,33 0,1 1,66 0a33,33 0,1 1,-66 0" />
 </vector>
