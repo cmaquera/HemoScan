@@ -1,0 +1,56 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Gradle files
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python / Machine Learning caches & venvs
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+training/checkpoints/*.keras
+training/checkpoints/*.h5
+
+# Large Raw Datasets (Exceed GitHub 100MB limit)
+# Keep dataset/metadata_unified.csv tracked
+dataset/*.zip
+dataset/conjunctiva/
+dataset/fingernail/
+stitch_hemoscan_ai_mobile_app.zip
+
+# Temporary test screen captures from emulator
+screenshot_*.png
+screen_*.png
+validation_*.png
+updated_*.png
+emulator_*.png
