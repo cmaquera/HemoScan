@@ -47,6 +47,7 @@ dataset/*.zip
 dataset/conjunctiva/
 dataset/fingernail/
 stitch_hemoscan_ai_mobile_app.zip
+stitch_design/
 
 # Temporary test screen captures from emulator
 screenshot_*.png
