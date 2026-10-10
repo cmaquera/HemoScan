@@ -12,7 +12,8 @@ Aplicación móvil nativa en **Kotlin** con **Jetpack Compose** y **TensorFlow L
 > - [Guía de Contribución para Desarrolladores (CONTRIBUTING.md)](CONTRIBUTING.md)
 > - [Pipeline de Entrenamiento ML y Datasets (training/README.md)](training/README.md)
 > - [Memoria de Calidad Clean Code y SonarQube (.quality/README.md)](.quality/README.md)
-> - [Licencia MIT y Aviso Médico (LICENSE)](LICENSE)
+> - [Aviso Médico y Exención de Responsabilidad (DISCLAIMER.md)](DISCLAIMER.md)
+> - [Licencia MIT (LICENSE)](LICENSE)
 
 ---
 
