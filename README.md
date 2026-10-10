@@ -9,8 +9,10 @@ Aplicación móvil nativa en **Kotlin** con **Jetpack Compose** y **TensorFlow L
 > **Documentación del Proyecto:**
 > - [Paper Científico y Arquitectura Técnica (PAPER.md)](PAPER.md)
 > - [Historias de Usuario y Criterios BDD (USER_STORIES.md)](USER_STORIES.md)
+> - [Guía de Contribución para Desarrolladores (CONTRIBUTING.md)](CONTRIBUTING.md)
 > - [Pipeline de Entrenamiento ML y Datasets (training/README.md)](training/README.md)
 > - [Memoria de Calidad Clean Code y SonarQube (.quality/README.md)](.quality/README.md)
+> - [Licencia MIT y Aviso Médico (LICENSE)](LICENSE)
 
 ---
 
@@ -142,8 +144,53 @@ adb install -r HemoScan_AI_debug.apk
 
 ---
 
-## Referencias Científicas
+## Referencias Científicas y Modelos Base
 
-1. **HemaViT:** *Transformer-based deep learning for automated non-invasive anemia detection using conjunctival imaging.* (Scientific Reports, 2026).
-2. **Smartphone Anemia App:** *Smartphone app for non-invasive detection of anemia using only patient-sourced photos.* (Nature Communications, 2018).
-3. **WHO Guidelines:** *Haemoglobin concentrations for the diagnosis of anaemia and assessment of severity.* (World Health Organization, 2011).
+El desarrollo teórico, colorimétrico y los modelos neuronales de **HemoScan AI** se fundamentan en las siguientes investigaciones revisadas por pares y estándares biomédicos internacionales:
+
+### 1. Modelos de Inteligencia Artificial
+
+* **HemaViT (Vision Transformer + Feature Pyramid Network):**
+  * *Referencia:* Sindhusha, G., Mishra, R. K., & Jegadeesan, R. (2026). *HemaViT: transformer-based deep learning for automated non-invasive anemia detection using conjunctival imaging*. **Scientific Reports** (Springer Nature), https://doi.org/10.1038/s41598-026-70965-w
+  * *Aplicación en HemoScan:* Base de la arquitectura de alta precisión para dispositivos de gama media y alta (≥ 4.0 GB RAM), empleando atención multiescala para capturar microvasos y palidez difusa en la conjuntiva.
+
+* **MobileNetV3-Small (Arquitectura Convolucional Eficiente para Edge AI):**
+  * *Referencia:* Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., Wang, W., Zhu, Y., Pang, R., Vasudevan, V., Le, Q. V., & Adam, H. (2019). *Searching for MobileNetV3*. **IEEE/CVF International Conference on Computer Vision (ICCV)**, pp. 1314-1324.
+  * *Aplicación en HemoScan:* Base del modelo cuantizado en INT8 (1.16 MB, 0.22 GFLOPs) para teléfonos de recursos restringidos (< 3.5 GB RAM) y Android Go.
+
+### 2. Fundamentos Bio-Ópticos y Espectrofotometría Tisular
+
+* **Detección Móvil y Colorimetría en Lecho Ungueal:**
+  * *Referencia:* Mannino, R. G., Myers, D. R., Tyburski, E. A., Caruso, C., Boudreaux, J., Leong, T., Clifford, G. D., & Lam, W. A. (2018). *Smartphone app for non-invasive detection of anemia using only patient-sourced photos*. **Nature Communications**, 9:4924. https://doi.org/10.1038/s41467-018-07262-2
+  * *Aplicación en HemoScan:* Algoritmo de calibración cromática, cálculo del índice de eritema ($EI = \ln R - \ln G$) y relaciones de atenuación vascular aplicadas al lecho ungueal.
+
+* **Microvasculatura Ocular y Estimación de Hemoglobina:**
+  * *Referencia:* Khan, R., Maseedupally, V., Thakoor, K. A., Raman, R., & Roy, M. (2025). *Noninvasive Anemia Detection and Hemoglobin Estimation from Retinal Images Using Deep Learning: A Scalable Solution for Resource-Limited Settings*. **Translational Vision Science & Technology (TVST)**, 14(1):20. https://doi.org/10.1167/tvst.14.1.20
+  * *Aplicación en HemoScan:* Validación del comportamiento de densidad y tortuosidad vascular en tejidos mucosos y microvasculares bajo hipoxia crónica.
+
+### 3. Criterios Clínicos y Estratificación Epidemiológica
+
+* **Valores de Referencia y Severidad según la OMS:**
+  * *Referencia:* Organización Mundial de la Salud (OMS / WHO). (2011). *Haemoglobin concentrations for the diagnosis of anaemia and assessment of severity*. Vitamin and Mineral Nutrition Information System (VMNIS). Ginebra: World Health Organization (WHO/NMH/NHD/MNM/11.1).
+  * *Aplicación en HemoScan:* Umbrales diagnósticos de concentración de hemoglobina estratificados por grupo demográfico (hombres adultos < 13.0 g/dL, mujeres no gestantes < 12.0 g/dL, mujeres embarazadas < 11.0 g/dL y niños < 11.5 g/dL).
+
+### 4. Cohortes y Datasets de Entrenamiento Abiertos
+
+* **Eyes Defy Anemia (Italia e India):** Mendeley Data / Open Access Benchmark ($1,320$ imágenes de conjuntiva palpebral y fórnix con valores CBC de laboratorio confirmados).
+* **CP-AnemiC V2 (Ghana):** Dataset clínico de conjuntiva palpebral en población pediátrica.
+* **Subungual Nailbed Cohort:** Muestras de capilares de lecho ungueal y calibración fotométrica.
+
+---
+
+## Cómo Contribuir
+
+Si deseas colaborar con el desarrollo de la aplicación, optimizar los modelos de IA, agregar traducciones o mejorar la documentación, consulta nuestra [Guía de Contribución para Desarrolladores (CONTRIBUTING.md)](CONTRIBUTING.md).
+
+---
+
+## Licencia y Aviso Médico
+
+Este proyecto está distribuido bajo la [Licencia MIT](LICENSE).
+
+**Aviso Médico (Medical Disclaimer):**  
+HemoScan AI es una herramienta de cribado preliminar no invasivo con fines informativos y de apoyo preventivo en salud digital. No constituye un dispositivo de diagnóstico médico formal, no emite un diagnóstico clínico definitivo y no sustituye la evaluación médica profesional, la consulta presencial ni los análisis formales de laboratorio (hemograma completo - CBC).

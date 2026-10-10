@@ -114,8 +114,8 @@ Para entrenar con el dataset completo acelerado por GPU (NVIDIA T4 / V100):
 
 ```python
 # 1. Clonar el repositorio y navegar a la carpeta de entrenamiento
-!git clone https://github.com/tu-usuario/anemia-detection.git
-%cd anemia-detection/training
+!git clone https://github.com/cmaquera/HemoScan.git
+%cd HemoScan/training
 
 # 2. Descargar datasets y estructurar metadatos
 !python dataset_downloader.py
@@ -151,7 +151,7 @@ Evaluación exhaustiva ejecutada sobre el dataset clínico unificado (Italia, In
 
 | Métrica Diagnóstica | HemaViT (Gama Media/Alta) | MobileNetV3 (Gama Baja) | Ensemble Multiescala | Umbral Clínico OMS |
 | :--- | :---: | :---: | :---: | :---: |
-| **Área Bajo la Curva (AUC-ROC)** | **95.64%** ⭐ | **90.88%** ⭐ | **95.82%** ⭐ | $\ge 90.0\%$ |
+| **Área Bajo la Curva (AUC-ROC)** | **95.64%** | **90.88%** | **95.82%** | $\ge 90.0\%$ |
 | **Especificidad (Sanos)** | **93.39%** | **85.17%** | **92.80%** | $\ge 85.0\%$ |
 | **Sensibilidad (Anémicos)** | **90.00%** | **83.00%** | **91.25%** | $\ge 85.0\%$ |
 | **Precisión Diagnóstica** | **90.76%** | **81.03%** | **91.05%** | $\ge 80.0\%$ |
