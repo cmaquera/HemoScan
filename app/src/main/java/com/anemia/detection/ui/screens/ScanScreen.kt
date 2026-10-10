@@ -320,7 +320,7 @@ fun ScanScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(modifier = Modifier.fillMaxWidth()) {
                     ModeOptionItem(
-                        title = "🔬 Modo Guiado",
+                        title = "Modo Guiado",
                         subtitle = "4 fotos con guía paso a paso",
                         badge = "Recomendado",
                         isSelected = scanMode == ScanCaptureMode.MULTI_SHOT,
@@ -329,7 +329,7 @@ fun ScanScreen(
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     ModeOptionItem(
-                        title = "⚡ Modo Rápido",
+                        title = "Modo Rápido",
                         subtitle = "1 foto para chequeo al instante",
                         badge = "1 Foto",
                         isSelected = scanMode == ScanCaptureMode.SINGLE_SHOT,
@@ -419,7 +419,7 @@ fun ScanScreen(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "📸 Ver fotos y ejemplos paso a paso",
+                                text = "Ver fotos y ejemplos paso a paso",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = ClinicalPrimary
@@ -514,9 +514,9 @@ fun ScanScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = if (capturedBitmaps.size == 4) {
-                                    "🔬 Analizar Chequeo Completo (4 Fotos)"
+                                    "Analizar Chequeo Completo (4 Fotos)"
                                 } else {
-                                    "🔬 Analizar Muestra (${capturedBitmaps.size} de 4 Fotos)"
+                                    "Analizar Muestra (${capturedBitmaps.size} de 4 Fotos)"
                                 },
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold

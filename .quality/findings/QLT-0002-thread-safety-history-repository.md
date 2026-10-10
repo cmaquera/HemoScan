@@ -1,7 +1,7 @@
 # QLT-0002: Sincronización y duplicación en persistencia SharedPreferences
 
 - **Estado:** Resuelto
-- **Severidad:** 🟠 High
+- **Severidad:** [High]
 - **Regla Sonar:** `kotlin:S2885` / `kotlin:S1192` · Cualidad: Reliability / Maintainability
 - **Ubicación:** `app/src/main/java/com/anemia/detection/storage/HistoryRepository.kt:28-66`
 - **Fecha detección:** 2026-10-10

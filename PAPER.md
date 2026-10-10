@@ -248,7 +248,7 @@ Point-of-care mobile health tools intended for the general public fail if users 
 ### 5.4. Offline-First Storage & Opportunistic Cloud Synchronization
 * **Thread-Safe Local Persistence:** Diagnosis records are persisted to private app storage via `@Synchronized` atomic operations in `HistoryRepository`, eliminating race conditions and redundant JSON serializations.
 * **Granular History Control:** Users can selectively delete individual historical records with explicit confirmation dialogs.
-* **Opportunistic Network Sync (`CloudSyncManager`):** The app monitors network capabilities (`NET_CAPABILITY_INTERNET`). When a verified, stable connection is detected, pending local records are uploaded and visually badged (`☁️ Nube` vs `📱 Local`), strictly preserving complete offline utility when connectivity is unavailable.
+* **Opportunistic Network Sync (`CloudSyncManager`):** The app monitors network capabilities (`NET_CAPABILITY_INTERNET`). When a verified, stable connection is detected, pending local records are uploaded and visually badged (`Nube` vs `Local`), strictly preserving complete offline utility when connectivity is unavailable.
 
 ### 5.5. SonarQube Clean Code Quality Assurance
 The application source underwent rigorous static analysis and refactoring under the SonarQube Clean Code taxonomy:

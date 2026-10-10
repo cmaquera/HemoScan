@@ -111,7 +111,7 @@ fun NutritionGuideDialog(
 
                 // Sección 1: Hierro Animal (Alta Absorción)
                 FoodCategoryCard(
-                    title = "🥩 1. Hierro Animal (Se absorbe muy rápido)",
+                    title = "1. Hierro de Origen Animal (Alta Biodisponibilidad)",
                     badge = "Máxima Eficacia",
                     badgeColor = SeverityNormal,
                     items = listOf(
@@ -126,7 +126,7 @@ fun NutritionGuideDialog(
 
                 // Sección 2: Hierro Vegetal
                 FoodCategoryCard(
-                    title = "🌱 2. Hierro Vegetal (Legumbres y Semillas)",
+                    title = "2. Hierro de Origen Vegetal (Legumbres y Semillas)",
                     badge = "Nutritivo",
                     badgeColor = ClinicalPrimary,
                     items = listOf(
@@ -151,7 +151,7 @@ fun NutritionGuideDialog(
                             Icon(Icons.Default.ElectricBolt, contentDescription = null, tint = Color(0xFFD97706), modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "💡 El Secreto: Acompaña con Vitamina C",
+                                text = "Recomendación: Acompañar con Vitamina C",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF92400E)
@@ -182,7 +182,7 @@ fun NutritionGuideDialog(
                             Icon(Icons.Default.Block, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "⚠️ Evita durante el almuerzo",
+                                text = "Precaución: Evitar durante las comidas principales",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF991B1B)

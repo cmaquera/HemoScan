@@ -1,7 +1,7 @@
 # QLT-0003: Complejidad cognitiva y composable monolítico en ScanScreen
 
 - **Estado:** Resuelto
-- **Severidad:** 🟡 Medium
+- **Severidad:** [Medium]
 - **Regla Sonar:** `kotlin:S3776` (Cognitive Complexity) / `kotlin:S104` (File length) · Cualidad: Maintainability
 - **Ubicación:** `app/src/main/java/com/anemia/detection/ui/screens/ScanScreen.kt:110`
 - **Fecha detección:** 2026-10-10

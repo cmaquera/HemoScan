@@ -6,24 +6,24 @@
 
 Aplicación móvil nativa en **Kotlin** con **Jetpack Compose** y **TensorFlow Lite** para la detección y estimación no invasiva de hemoglobina y anemia en tiempo real, diseñada con arquitectura **Offline-First**, lenguaje comprensible para usuarios no médicos y optimizada para operar de forma privada en el propio dispositivo.
 
-> 📚 **Documentación del Proyecto:**
-> - [📄 Paper Científico y Arquitectura Técnica (PAPER.md)](PAPER.md)
-> - [📋 Historias de Usuario y Criterios BDD (USER_STORIES.md)](USER_STORIES.md)
-> - [🧠 Pipeline de Entrenamiento ML y Datasets (training/README.md)](training/README.md)
-> - [🛡️ Memoria de Calidad Clean Code y SonarQube (.quality/README.md)](.quality/README.md)
+> **Documentación del Proyecto:**
+> - [Paper Científico y Arquitectura Técnica (PAPER.md)](PAPER.md)
+> - [Historias de Usuario y Criterios BDD (USER_STORIES.md)](USER_STORIES.md)
+> - [Pipeline de Entrenamiento ML y Datasets (training/README.md)](training/README.md)
+> - [Memoria de Calidad Clean Code y SonarQube (.quality/README.md)](.quality/README.md)
 
 ---
 
-## 🎯 Características Principales
+## Características Principales
 
-### 1. Inferencia 100% Local (Edge AI) & Privacidad
+### 1. Inferencia Local (Edge AI) y Privacidad
 * **Ejecución Local:** Todo el procesamiento neuronal y colorimétrico se realiza dentro del teléfono mediante TFLite, sin subir imágenes a la nube ni vulnerar la privacidad del usuario.
-* **Uso Personal y Seguro:** Interfaz centrada exclusivamente en el dueño del dispositivo (*"Tu Chequeo de Hemoglobina • 100% Privado"*), eliminando saludos ficticios o perfiles innecesarios.
+* **Uso Personal y Seguro:** Interfaz centrada exclusivamente en el titular del dispositivo (*"Tu Chequeo de Hemoglobina • 100% Privado"*), eliminando saludos genéricos o perfiles innecesarios.
 
-### 2. Switch Inteligente entre Motores de IA
-* **Gama Baja / Económica (< 3.5 GB RAM o Android Go):**  
+### 2. Conmutación Adaptativa de Motores de IA
+* **Gama Baja / Dispositivos Restringidos (< 3.5 GB RAM o Android Go):**  
   Activa automáticamente **MobileNetV3 Cuantizado (INT8)**.  
-  * Consumo: **0.22 GFLOPs** (15× menos cómputo).  
+  * Consumo: **0.22 GFLOPs** (15 veces menor cómputo).  
   * Tamaño binario: **1.16 MB**.  
   * Métricas: **90.88% AUC-ROC / 82.98% Exactitud / 85.17% Especificidad** (MAE = 2.15 g/dL, latencia ~28 ms).
 * **Gama Media y Alta (≥ 4.0 GB RAM):**  
@@ -34,30 +34,30 @@ Aplicación móvil nativa en **Kotlin** con **Jetpack Compose** y **TensorFlow L
 * **Motor Clínico Calibrado (Manual):** Modo analítico determinista basado en índices de eritema y relaciones cromáticas biomédicas.
 
 ### 3. Protocolos de Captura Guiada
-* **Modo Guiado (4 Fotos - Recomendado):** Protocolo binocular/bilateral con descarte inteligente de outliers y reducción de varianza en un 50% ($SE = \sigma / \sqrt{N}$).
+* **Modo Guiado (4 Fotos - Recomendado):** Protocolo bilateral con descarte estadístico de valores atípicos y reducción de varianza en un 50% ($SE = \sigma / \sqrt{N}$).
 * **Modo Rápido (1 Foto):** Triage instantáneo en segundos para chequeos rápidos.
-* **Lenguaje Accesible:** Reemplazo de términos clínicos confusos por expresiones cotidianas:
+* **Lenguaje Accesible:** Sustitución de términos clínicos complejos por expresiones funcionales:
   * *"Interior del Ojo (Párpado inferior)"* en lugar de conjuntiva palpebral.
   * *"Uña de la Mano (Sin esmalte)"* en lugar de lecho ungueal.
   * *"IA Local"* en lugar de neuronal.
-* **Guía Visual Integrada:** Diálogo con ilustraciones paso a paso, Do's & Don'ts y recomendaciones de iluminación ambiental.
+* **Guía Visual Integrada:** Diálogo con esquemas de captura paso a paso, criterios de validación y control de iluminación ambiental.
 
-### 4. Herramientas Rápidas de Salud
-* **Guía de Alimentos con Hierro:** Catálogo interactivo dividido en:
-  * *Hierro Hemo* (origen animal, alta absorción: sangrecita, hígado, bazo, carnes rojas).
-  * *Hierro No Hemo* (origen vegetal: lentejas, espinacas, garbanzos).
-  * *Potenciadores* (Vitamina C para multiplicar la asimilación).
-  * *Inhibidores* (Café, té y lácteos inmediatamente tras la comida).
-* **Compartir Resumen:** Integración con el menú nativo de Android (`Intent.ACTION_SEND`) para exportar reportes legibles por WhatsApp, correo o notas médicas.
+### 4. Herramientas de Apoyo Clínico y Nutricional
+* **Guía de Alimentos con Hierro:** Catálogo estructurado en:
+  * *Hierro Hemo* (origen animal, alta biodisponibilidad: sangrecita, hígado, bazo, carnes rojas).
+  * *Hierro No Hemo* (origen vegetal: legumbres, espinacas, semillas).
+  * *Potenciadores* (Vitamina C para optimizar absorción).
+  * *Inhibidores* (Té, café y lácteos inmediatamente posteriores a la ingesta).
+* **Compartir Resumen:** Integración con el gestor nativo de Android (`Intent.ACTION_SEND`) para exportar reportes legibles por mensajería, correo o notas clínicas.
 
-### 5. Historial Offline y Respaldo Opcional en la Nube
-* **Almacenamiento Local Seguro:** Todos los chequeos se guardan instantáneamente en memoria interna privada con operaciones sincronizadas (`@Synchronized`).
-* **Borrado Individual:** Permite eliminar chequeos puntuales con confirmación previa.
-* **Sincronización Inteligente (`CloudSyncManager`):** Detección de conectividad en tiempo real. Indica el estado (`📱 Móvil` vs `☁️ Nube`) y sincroniza únicamente cuando hay conexión a internet estable.
+### 5. Historial Offline y Sincronización Opcional
+* **Almacenamiento Local Seguro:** Todos los chequeos se guardan en almacenamiento interno privado mediante operaciones concurrentes sincronizadas (`@Synchronized`).
+* **Gestión Granular:** Permite eliminar chequeos individuales con diálogo de confirmación.
+* **Sincronización de Red (`CloudSyncManager`):** Detección de conectividad en tiempo real. Indica el estado de respaldo (`Local` frente a `Nube`) y sincroniza únicamente cuando existe una conexión estable.
 
 ---
 
-## 📁 Arquitectura del Código
+## Arquitectura del Código
 
 ```
 anemia-detection/
@@ -107,27 +107,27 @@ anemia-detection/
 
 ---
 
-## 🛡️ Estándar de Calidad de Código (`.quality/`)
+## Estándar de Calidad de Código (.quality/)
 
 El proyecto fue auditado y saneado bajo directrices **Clean Code de SonarQube** mediante la habilidad `code-quality`:
 
 | ID | Severidad | Regla | Estado |
 |---|---|---|---|
-| **QLT-0001** | 🔴 Blocker | `kotlin:S2095` (Cierre determinista de descriptores nativos en TFLite) | **Resuelto** ✅ |
-| **QLT-0002** | 🟠 High | `kotlin:S2885` / `kotlin:S1192` (Persistencia thread-safe atómica en `HistoryRepository`) | **Resuelto** ✅ |
-| **QLT-0003** | 🟡 Medium | `kotlin:S3776` / `kotlin:S104` (Modularización de `ScanScreen` en `ScanOptionsComponents`) | **Resuelto** ✅ |
+| **QLT-0001** | [Blocker] | `kotlin:S2095` (Cierre determinista de descriptores nativos en TFLite) | Resuelto |
+| **QLT-0002** | [High] | `kotlin:S2885` / `kotlin:S1192` (Persistencia thread-safe atómica en `HistoryRepository`) | Resuelto |
+| **QLT-0003** | [Medium] | `kotlin:S3776` / `kotlin:S104` (Modularización de `ScanScreen` en `ScanOptionsComponents`) | Resuelto |
 
-* **Quality Gate:** **PASSED** ✅ (0 deuda técnica pendiente).
+* **Quality Gate:** **PASSED** (0 deuda técnica pendiente).
 
 ---
 
-## 🚀 Compilación, Pruebas y Despliegue
+## Compilación, Pruebas y Despliegue
 
 ### 1. Compilar APK de Depuración
 ```powershell
 .\gradlew.bat assembleDebug
 ```
-El APK se genera en: `app/build/outputs/apk/debug/app-debug.apk` y se copia en la raíz como [`HemoScan_AI_debug.apk`](HemoScan_AI_debug.apk).
+El archivo binario se genera en `app/build/outputs/apk/debug/app-debug.apk` y se copia en la raíz del repositorio como [`HemoScan_AI_debug.apk`](HemoScan_AI_debug.apk).
 
 ### 2. Ejecutar Pruebas Unitarias
 ```powershell
@@ -135,14 +135,14 @@ El APK se genera en: `app/build/outputs/apk/debug/app-debug.apk` y se copia en l
 ```
 * Resultado: **24 tareas ejecutadas / 100% exitosas**.
 
-### 3. Instalar en Teléfono o Emulador
+### 3. Instalar en Dispositivo Físico o Emulador
 ```powershell
 adb install -r HemoScan_AI_debug.apk
 ```
 
 ---
 
-## 🔬 Referencias Científicas
+## Referencias Científicas
 
 1. **HemaViT:** *Transformer-based deep learning for automated non-invasive anemia detection using conjunctival imaging.* (Scientific Reports, 2026).
 2. **Smartphone Anemia App:** *Smartphone app for non-invasive detection of anemia using only patient-sourced photos.* (Nature Communications, 2018).

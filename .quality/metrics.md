@@ -7,4 +7,4 @@
 - **Complejidad Cognitiva:** Modularizada (Componentes de captura y guía extraídos a `ScanOptionsComponents.kt`).
 - **Confiabilidad (Reliability):** 100% saneada (Descriptores TFLite cerrados con `.use { }`, persistencia sincronizada con `@Synchronized`).
 - **Deuda Técnica Estimada:** 0 minutos (Todos los hallazgos resueltos).
-- **Quality Gate:** **PASSED** ✅ (Pasa compilación, inferencia local optimizada, sin fugas de recursos ni carreras).
+- **Quality Gate:** **PASSED** (Pasa compilación, inferencia local optimizada, sin fugas de recursos ni carreras).

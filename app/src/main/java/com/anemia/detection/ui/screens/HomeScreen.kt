@@ -118,13 +118,13 @@ fun HomeScreen(
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             val message = if (res != null) {
-                "📊 *Reporte de Chequeo HemoScan AI*\n" +
+                "*Reporte de Chequeo HemoScan AI*\n" +
                         "Nivel de Hemoglobina: ${String.format(Locale.US, "%.1f", res.hemoglobinLevel)} g/dL\n" +
                         "Resultado: ${res.severity.displayName}\n" +
                         "Fecha: ${SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(res.timestamp))}\n\n" +
                         "_Chequeo preliminar no invasivo. Consulta con un profesional de la salud._"
             } else {
-                "💡 Monitorea tus niveles de hemoglobina con HemoScan AI de forma rápida, no invasiva y 100% privada desde tu móvil."
+                "Monitorea tus niveles de hemoglobina con HemoScan AI de forma rápida, no invasiva y 100% privada desde tu dispositivo."
             }
             putExtra(Intent.EXTRA_TEXT, message)
             type = "text/plain"

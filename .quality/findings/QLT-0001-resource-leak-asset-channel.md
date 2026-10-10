@@ -1,7 +1,7 @@
 # QLT-0001: Fuga de descriptores de archivos en carga de modelo TFLite
 
 - **Estado:** Resuelto
-- **Severidad:** 🔴 Blocker
+- **Severidad:** [Blocker]
 - **Regla Sonar:** `kotlin:S2095` ("Resources should be closed") · Cualidad: Reliability
 - **Ubicación:** `app/src/main/java/com/anemia/detection/engine/AnemiaInferenceEngine.kt:39-48`
 - **Fecha detección:** 2026-10-10

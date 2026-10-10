@@ -310,7 +310,7 @@ class AnemiaInferenceEngine(private val context: Context) {
                 "No te automediques con suplementos de hierro sin previa prescripción médica."
             )
             AnemiaSeverity.SEVERE -> listOf(
-                "⚠️ ALERTA: Concentración crítica de hemoglobina (< 8.0 g/dL).",
+                "ALERTA CLÍNICA: Concentración crítica de hemoglobina (< 8.0 g/dL).",
                 "Acude de inmediato a un servicio médico de urgencias o consulta prioritaria.",
                 "Esta condición puede comprometer la oxigenación tisular y requiere atención inmediata."
             )

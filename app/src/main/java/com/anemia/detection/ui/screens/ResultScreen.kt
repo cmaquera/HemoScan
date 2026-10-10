@@ -87,11 +87,11 @@ fun ResultScreen(
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             val dateFormatted = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(result.timestamp))
-            val message = "📊 *Reporte de Chequeo HemoScan AI*\n" +
+            val message = "*Reporte de Chequeo HemoScan AI*\n" +
                     "Nivel de Hemoglobina: ${String.format(Locale.US, "%.1f", result.hemoglobinLevel)} g/dL\n" +
                     "Resultado: ${result.severity.displayName}\n" +
                     "Fecha: $dateFormatted\n" +
-                    "Protocolo: ${if (result.isMultiShot) "🔬 Clínico (4 tomas)" else "⚡ Rápido (1 toma)"}\n" +
+                    "Protocolo: ${if (result.isMultiShot) "Clínico (4 tomas)" else "Rápido (1 toma)"}\n" +
                     "Confianza: ${(result.confidence * 100).toInt()}%\n\n" +
                     "_Chequeo preliminar no invasivo. Consulta con un profesional de la salud._"
             putExtra(Intent.EXTRA_TEXT, message)

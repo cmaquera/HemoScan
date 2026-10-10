@@ -354,7 +354,7 @@ private fun HistoryItemCard(
                                 .padding(horizontal = 4.dp, vertical = 1.dp)
                         ) {
                             Text(
-                                text = "☁️ Nube",
+                                text = "Nube",
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = SeverityNormal
@@ -367,7 +367,7 @@ private fun HistoryItemCard(
                                 .padding(horizontal = 4.dp, vertical = 1.dp)
                         ) {
                             Text(
-                                text = "📱 Móvil",
+                                text = "Local",
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF64748B)

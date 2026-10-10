@@ -113,7 +113,7 @@ Documento de especificación y validación de Historias de Usuario bajo metodolo
 
 #### Criterios de Aceptación (BDD)
 * **Escenario 7.1:** Guía visual interactiva de 4 tomas
-  * **Dado que** el usuario selecciona el modo "🔬 Clínico (4 Tomas)".
+  * **Dado que** el usuario selecciona el modo "Modo Guiado (4 Tomas)".
   * **Cuando** realiza las capturas,
   * **Entonces** la app indica el paso actual ("Toma 1: Ojo Der", "Toma 2: Ojo Der", "Toma 3: Ojo Izq", "Toma 4: Ojo Izq"), muestra los círculos numerados de avance y la tira de miniaturas con opción de eliminar cualquier toma borrosa.
 * **Escenario 7.2:** Descarte automático de outliers ópticos ($N \ge 3$)
@@ -122,7 +122,7 @@ Documento de especificación y validación de Historias de Usuario bajo metodolo
   * **Entonces** dicha toma se descarta del ensamble y las tomas restantes se promedian de manera robusta.
 * **Escenario 7.3:** Estimación del Margen de Error Estándar (SE)
   * **Dado que** se completa el ensamble multi-toma.
-  * **Entonces** la pantalla de resultados reporta la insignia `[🔬 Multi-Toma 4x]`, el margen $\pm\text{SE}\text{ g/dL}$ y un boost de confianza clínica.
+  * **Entonces** la pantalla de resultados reporta la insignia `[Multi-Toma 4x]`, el margen $\pm\text{SE}\text{ g/dL}$ y un boost de confianza clínica.
 
 ---
 
@@ -192,7 +192,7 @@ Documento de especificación y validación de Historias de Usuario bajo metodolo
 * **Escenario 11.2:** Detección de Conexión y Sincronización Inteligente (`CloudSyncManager`)
   * **Dado que** el dispositivo recupera conexión a internet estable (`NetworkCapabilities.NET_CAPABILITY_INTERNET`).
   * **Cuando** el usuario solicita respaldo en la nube o se detecta red activa,
-  * **Entonces** los registros locales pendientes se sincronizan (`isSynced = true`) y las tarjetas del historial muestran la insignia `☁️ Nube` en vez de `📱 Local`.
+  * **Entonces** los registros locales pendientes se sincronizan (`isSynced = true`) y las tarjetas del historial muestran la insignia `Nube` en vez de `Local`.
 
 ---
 
@@ -215,21 +215,21 @@ Documento de especificación y validación de Historias de Usuario bajo metodolo
 
 ---
 
-## 📋 Matriz de Trazabilidad y Estado de Validación
+## Matriz de Trazabilidad y Estado de Validación
 
 | Historia de Usuario | Módulo Responsable | Pruebas Unitarias / Instrumentadas | Validación Clínica / Calidad | Estado Final |
 | :--- | :--- | :---: | :---: | :---: |
-| **HU-01: Operación 100% Offline** | HistoryRepository, AnemiaInferenceEngine | ✅ AnemiaAppIntegrationTest | ✅ Verificado sin internet | **COMPLETADO** |
-| **HU-02: Detección Adaptativa de Gama** | DeviceProfiler, DeviceTier | ✅ DeviceTierTest | ✅ Switch dinámico verificado | **COMPLETADO** |
-| **HU-03: Control de Calidad de Luz** | ImagePreprocessor | ✅ ImagePreprocessorLogicTest | ✅ Filtro $Y \in [40, 245]$ | **COMPLETADO** |
-| **HU-04: Criterios Clínicos OMS** | PatientProfile, DetectionResult | ✅ PatientProfileTest | ✅ 4 perfiles demográficos | **COMPLETADO** |
-| **HU-05: Historial Offline Persistente** | HistoryRepository | ✅ AnemiaAppIntegrationTest | ✅ Almacenamiento JSON local | **COMPLETADO** |
-| **HU-06: Calibración Youden** | AnemiaInferenceEngine | ✅ AnemiaAppIntegrationTest | ✅ AUC $95.64\%$ / $90.88\%$ | **COMPLETADO** |
-| **HU-07: Protocolo Multi-Toma 4x** | ScanScreen, AnemiaInferenceEngine, DetectionResult | ✅ DetectionResultTest | ✅ Reducción de varianza 50% | **COMPLETADO** |
-| **HU-08: Lenguaje Accesible y Guía Visual** | VisualCaptureGuideDialog, ScanOptionsComponents | ✅ Compose UI Testing | ✅ Usabilidad para público no experto | **COMPLETADO** |
-| **HU-09: Guía Nutricional de Hierro** | NutritionGuideDialog, HomeScreen, ResultScreen | ✅ Compose UI Testing | ✅ Alimentos Hemo/No-Hemo y Vit C | **COMPLETADO** |
-| **HU-10: Compartir Resumen Nativo** | ResultScreen (Intent.ACTION_SEND) | ✅ Android Intent Validation | ✅ Integración nativa del sistema | **COMPLETADO** |
-| **HU-11: Borrado Granular & Cloud Sync** | HistoryScreen, CloudSyncManager | ✅ HistoryRepositoryTest | ✅ Sync adaptativo online/offline | **COMPLETADO** |
-| **HU-12: Arquitectura Clean Code SonarQube** | AnemiaInferenceEngine, HistoryRepository, ScanScreen | ✅ Gradle testDebugUnitTest + SonarQube Audit | ✅ Quality Gate PASSED (0 deuda) | **COMPLETADO** |
+| **HU-01: Operación 100% Offline** | HistoryRepository, AnemiaInferenceEngine | AnemiaAppIntegrationTest | Verificado sin internet | COMPLETADO |
+| **HU-02: Detección Adaptativa de Gama** | DeviceProfiler, DeviceTier | DeviceTierTest | Switch dinámico verificado | COMPLETADO |
+| **HU-03: Control de Calidad de Luz** | ImagePreprocessor | ImagePreprocessorLogicTest | Filtro $Y \in [40, 245]$ | COMPLETADO |
+| **HU-04: Criterios Clínicos OMS** | PatientProfile, DetectionResult | PatientProfileTest | 4 perfiles demográficos | COMPLETADO |
+| **HU-05: Historial Offline Persistente** | HistoryRepository | AnemiaAppIntegrationTest | Almacenamiento JSON local | COMPLETADO |
+| **HU-06: Calibración Youden** | AnemiaInferenceEngine | AnemiaAppIntegrationTest | AUC $95.64\%$ / $90.88\%$ | COMPLETADO |
+| **HU-07: Protocolo Multi-Toma 4x** | ScanScreen, AnemiaInferenceEngine, DetectionResult | DetectionResultTest | Reducción de varianza 50% | COMPLETADO |
+| **HU-08: Lenguaje Accesible y Guía Visual** | VisualCaptureGuideDialog, ScanOptionsComponents | Compose UI Testing | Usabilidad para público no experto | COMPLETADO |
+| **HU-09: Guía Nutricional de Hierro** | NutritionGuideDialog, HomeScreen, ResultScreen | Compose UI Testing | Alimentos Hemo/No-Hemo y Vit C | COMPLETADO |
+| **HU-10: Compartir Resumen Nativo** | ResultScreen (Intent.ACTION_SEND) | Android Intent Validation | Integración nativa del sistema | COMPLETADO |
+| **HU-11: Borrado Granular & Cloud Sync** | HistoryScreen, CloudSyncManager | HistoryRepositoryTest | Sync adaptativo online/offline | COMPLETADO |
+| **HU-12: Arquitectura Clean Code SonarQube** | AnemiaInferenceEngine, HistoryRepository, ScanScreen | Gradle testDebugUnitTest + SonarQube Audit | Quality Gate PASSED (0 deuda) | COMPLETADO |
 
 

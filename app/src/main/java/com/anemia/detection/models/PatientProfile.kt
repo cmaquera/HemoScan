@@ -22,7 +22,7 @@ enum class AnemiaSeverity(val displayName: String, val clinicalGuidance: String)
     ),
     SEVERE(
         "Anemia Severa",
-        "⚠️ ALERTA: Nivel crítico de hemoglobina (< 8.0 g/dL). Es indispensable acudir inmediatamente a un servicio médico de urgencias."
+        "ALERTA CLÍNICA: Nivel crítico de hemoglobina (< 8.0 g/dL). Es indispensable acudir inmediatamente a un servicio médico de urgencias."
     )
 }
 
