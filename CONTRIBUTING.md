@@ -17,9 +17,6 @@ Toda contribución —desde mejoras en la arquitectura, optimizaciones de modelo
 3. **Arquitectura Limpia y Calidad de Código (Clean Code):**
    El repositorio mantiene un estándar riguroso bajo la taxonomía de SonarQube (registrado en la carpeta `.quality/`). Todo código nuevo debe ser determinista, seguro ante concurrencia (*thread-safe*), libre de fugas de descriptores nativos y modular.
 
-4. **Tono y Seriedad Profesional:**
-   Tanto en la documentación como en las cadenas de texto de la aplicación (*UI strings*), se debe mantener un lenguaje formal, técnico y clínico, evitando el uso de emojis o elementos gráficos informales.
-
 ---
 
 ## 2. Requisitos del Entorno de Desarrollo
