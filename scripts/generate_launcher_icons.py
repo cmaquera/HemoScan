@@ -6,9 +6,7 @@ def generate_icons(source_path="app_icon.jpg", res_dir="app/src/main/res"):
         print(f"Error: {source_path} does not exist.")
         return
 
-    src_img = Image.open(source_path)
-    # Crop squircle bounds (768x768 centered emblem)
-    cropped = src_img.crop((128, 128, 896, 896)).convert("RGBA")
+    src = Image.open(source_path).convert("RGBA")
 
     densities = {
         "mipmap-mdpi": 48,
@@ -22,12 +20,12 @@ def generate_icons(source_path="app_icon.jpg", res_dir="app/src/main/res"):
         out_dir = os.path.join(res_dir, folder)
         os.makedirs(out_dir, exist_ok=True)
 
-        resized = cropped.resize((size, size), Image.Resampling.LANCZOS)
+        resized = src.resize((size, size), Image.Resampling.LANCZOS)
 
         # Standard icon with subtle rounded corners
         mask_rect = Image.new("L", (size, size), 0)
         draw_rect = ImageDraw.Draw(mask_rect)
-        radius = int(size * 0.22)
+        radius = int(size * 0.20)
         draw_rect.rounded_rectangle([(0, 0), (size, size)], radius=radius, fill=255)
 
         standard = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -42,7 +40,7 @@ def generate_icons(source_path="app_icon.jpg", res_dir="app/src/main/res"):
         round_icon = Image.new("RGBA", (size, size), (0, 0, 0, 0))
         round_icon.paste(resized, (0, 0), mask_circle)
         round_icon.save(os.path.join(out_dir, "ic_launcher_round.webp"), "WEBP")
-        print(f"Generated {folder} ({size}x{size})")
+        print(f"Generated Google-style {folder} ({size}x{size})")
 
 if __name__ == "__main__":
     generate_icons()
