@@ -44,7 +44,7 @@ private val AppDestinationSaver: Saver<AppDestination, String> = Saver(
             value.startsWith("RESULT:") -> {
                 runCatching {
                     val json = value.removePrefix("RESULT:")
-                    AppDestination.Result(Gson().fromJson(json, DetectionResult::class.java))
+                    AppDestination.Result(Gson().fromJson(json, DetectionResult::class.java).normalized())
                 }.getOrDefault(AppDestination.Home)
             }
             else -> AppDestination.Home

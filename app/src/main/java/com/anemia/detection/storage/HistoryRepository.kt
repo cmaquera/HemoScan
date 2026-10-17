@@ -18,9 +18,22 @@ class HistoryRepository(context: Context) {
     fun getAllResults(): List<DetectionResult> = synchronized(LOCK) {
         val json = prefs.getString(KEY_HISTORY, null) ?: return emptyList()
         return try {
-            val type = object : TypeToken<List<DetectionResult>>() {}.type
-            val list: List<DetectionResult> = gson.fromJson(json, type)
-            list.sortedByDescending { it.timestamp }
+            val type = object : TypeToken<List<DetectionResult?>>() {}.type
+            val rawList: List<DetectionResult?> = gson.fromJson(json, type) ?: return emptyList()
+            val seenIds = HashSet<String>()
+            rawList
+                .filterNotNull()
+                .mapIndexed { index, item ->
+                    val normalized = item.normalized(fallbackIndex = index)
+                    if (seenIds.add(normalized.id)) {
+                        normalized
+                    } else {
+                        val uniqueId = "${normalized.id}_$index"
+                        seenIds.add(uniqueId)
+                        normalized.copy(id = uniqueId)
+                    }
+                }
+                .sortedByDescending { it.timestamp }
         } catch (e: Exception) {
             emptyList()
         }

@@ -54,4 +54,37 @@ class DetectionResultTest {
         assertEquals(4, multiShotResult.shotCount)
         assertEquals(0.24, multiShotResult.standardError ?: 0.0, 0.001)
     }
+
+    @Test
+    fun testLegacyGsonDeserializationDoesNotThrowNullPointerException() {
+        val legacyJson = """
+            {
+                "confidence": 0.97,
+                "erythemaIndex": 0.094,
+                "hemoglobinLevel": 12.0,
+                "id": "1791587943206",
+                "inferenceTimeMs": 42,
+                "isAnemic": true,
+                "isSynced": false,
+                "modelUsed": "HemaViT (Transformer Alta Precisión)",
+                "recommendations": ["Se observan signos de palidez tisular compatibles con anemia leve."],
+                "rednessRatio": 13.0,
+                "sampleType": "Conjuntiva Ocular",
+                "severity": "NORMAL",
+                "shotCount": 0,
+                "timestamp": 1791587943206
+            }
+        """.trimIndent()
+
+        val raw = com.google.gson.Gson().fromJson(legacyJson, DetectionResult::class.java)
+        assertTrue(raw.isNeuralInference)
+        org.junit.Assert.assertFalse(raw.isMultiShot)
+
+        val normalized = raw.normalized()
+        assertEquals("Modelo Neuronal (TFLite)", normalized.inferenceMethod)
+        assertEquals(1, normalized.shotCount)
+        assertEquals(1.3, normalized.rednessRatio, 0.01)
+        assertEquals(AnemiaSeverity.MILD, normalized.severity)
+        assertTrue(normalized.isAnemic)
+    }
 }
