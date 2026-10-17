@@ -382,6 +382,39 @@ fun ResultScreen(
                         desc = "Realiza un nuevo escaneo en dos semanas para monitorizar la evolución y respuesta de los niveles de bienestar."
                     )
 
+                    if (result.recommendations.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Indicaciones específicas para tu resultado",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ClinicalOnSurface
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        result.recommendations.forEach { rec ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 3.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text(
+                                    text = "•",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ClinicalPrimary,
+                                    modifier = Modifier.padding(end = 6.dp)
+                                )
+                                Text(
+                                    text = rec,
+                                    fontSize = 12.sp,
+                                    color = ClinicalOnSurfaceVariant,
+                                    lineHeight = 16.sp
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // Aviso Preventivo

@@ -31,6 +31,7 @@ val SeverityNormalContainer = Color(0xFFECFDF5)
 val SeverityMild = Color(0xFFD97706)
 val SeverityMildContainer = Color(0xFFFFFBEB)
 val SeverityModerate = Color(0xFFEA580C)
+val SeverityModerateContainer = Color(0xFFFFF7ED)
 val SeveritySevere = Color(0xFFDC2626)
 val SeveritySevereContainer = Color(0xFFFEF2F2)
 

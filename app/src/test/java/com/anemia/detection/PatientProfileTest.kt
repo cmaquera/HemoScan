@@ -53,4 +53,38 @@ class PatientProfileTest {
         // Severa: < 8.0
         assertEquals(AnemiaSeverity.SEVERE, maleProfile.evaluateSeverity(6.8))
     }
+
+    @Test
+    fun testSeverityClassificationForPregnantFemale() {
+        val pregnantProfile = PatientProfile(category = PatientCategory.PREGNANT_FEMALE, age = 26)
+
+        // Normal: >= 11.0
+        assertEquals(AnemiaSeverity.NORMAL, pregnantProfile.evaluateSeverity(11.5))
+        assertEquals(AnemiaSeverity.NORMAL, pregnantProfile.evaluateSeverity(11.0))
+
+        // Leve: 10.0 a 10.9 (OMS gestantes)
+        assertEquals(AnemiaSeverity.MILD, pregnantProfile.evaluateSeverity(10.5))
+        assertEquals(AnemiaSeverity.MILD, pregnantProfile.evaluateSeverity(10.0))
+
+        // Moderada: 7.0 a 9.9 (OMS gestantes)
+        assertEquals(AnemiaSeverity.MODERATE, pregnantProfile.evaluateSeverity(9.5))
+        assertEquals(AnemiaSeverity.MODERATE, pregnantProfile.evaluateSeverity(7.0))
+
+        // Severa: < 7.0 (OMS gestantes)
+        assertEquals(AnemiaSeverity.SEVERE, pregnantProfile.evaluateSeverity(6.9))
+    }
+
+    @Test
+    fun testSeverityClassificationForChild() {
+        val childProfile = PatientProfile(category = PatientCategory.CHILD, age = 10)
+
+        // Normal: >= 11.5
+        assertEquals(AnemiaSeverity.NORMAL, childProfile.evaluateSeverity(11.5))
+        // Leve: 11.0 a 11.4
+        assertEquals(AnemiaSeverity.MILD, childProfile.evaluateSeverity(11.2))
+        // Moderada: 8.0 a 10.9
+        assertEquals(AnemiaSeverity.MODERATE, childProfile.evaluateSeverity(9.8))
+        // Severa: < 8.0
+        assertEquals(AnemiaSeverity.SEVERE, childProfile.evaluateSeverity(7.5))
+    }
 }

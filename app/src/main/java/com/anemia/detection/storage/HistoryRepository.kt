@@ -7,15 +7,15 @@ import com.google.gson.reflect.TypeToken
 
 class HistoryRepository(context: Context) {
 
-    private val prefs = context.getSharedPreferences("anemia_history_prefs", Context.MODE_PRIVATE)
+    private val prefs = context.applicationContext.getSharedPreferences("anemia_history_prefs", Context.MODE_PRIVATE)
     private val gson = Gson()
 
     companion object {
         private const val KEY_HISTORY = "offline_scan_history"
+        private val LOCK = Any()
     }
 
-    @Synchronized
-    fun getAllResults(): List<DetectionResult> {
+    fun getAllResults(): List<DetectionResult> = synchronized(LOCK) {
         val json = prefs.getString(KEY_HISTORY, null) ?: return emptyList()
         return try {
             val type = object : TypeToken<List<DetectionResult>>() {}.type
@@ -26,52 +26,44 @@ class HistoryRepository(context: Context) {
         }
     }
 
-    @Synchronized
-    private fun persistResults(list: List<DetectionResult>) {
+    private fun persistResults(list: List<DetectionResult>) = synchronized(LOCK) {
         val json = gson.toJson(list)
         prefs.edit().putString(KEY_HISTORY, json).apply()
     }
 
-    @Synchronized
-    fun saveResult(result: DetectionResult) {
+    fun saveResult(result: DetectionResult) = synchronized(LOCK) {
         val currentList = getAllResults().toMutableList()
         currentList.add(0, result)
         persistResults(currentList)
     }
 
-    @Synchronized
-    fun deleteResult(id: String) {
+    fun deleteResult(id: String) = synchronized(LOCK) {
         val currentList = getAllResults().filter { it.id != id }
         persistResults(currentList)
     }
 
-    @Synchronized
-    fun clearHistory() {
+    fun clearHistory() = synchronized(LOCK) {
         prefs.edit().remove(KEY_HISTORY).apply()
     }
 
-    @Synchronized
-    fun getLastResult(): DetectionResult? {
+    fun getLastResult(): DetectionResult? = synchronized(LOCK) {
         val list = getAllResults()
         return if (list.isNotEmpty()) list.first() else null
     }
 
-    @Synchronized
-    fun markAsSynced(id: String) {
+    fun markAsSynced(id: String) = synchronized(LOCK) {
         val currentList = getAllResults().map {
             if (it.id == id) it.copy(isSynced = true) else it
         }
         persistResults(currentList)
     }
 
-    @Synchronized
-    fun markAllAsSynced() {
+    fun markAllAsSynced() = synchronized(LOCK) {
         val currentList = getAllResults().map { it.copy(isSynced = true) }
         persistResults(currentList)
     }
 
-    @Synchronized
-    fun getUnsyncedCount(): Int {
+    fun getUnsyncedCount(): Int = synchronized(LOCK) {
         return getAllResults().count { !it.isSynced }
     }
 }

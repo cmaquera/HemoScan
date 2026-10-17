@@ -60,7 +60,6 @@ class AnemiaAppIntegrationTest {
     @Test
     fun testEndToEndInferenceAndHistorySaving() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val engine = AnemiaInferenceEngine(appContext)
         val historyRepo = HistoryRepository(appContext)
 
         val testBitmap = Bitmap.createBitmap(224, 224, Bitmap.Config.ARGB_8888)
@@ -71,11 +70,13 @@ class AnemiaAppIntegrationTest {
         }
 
         val profile = PatientProfile(category = PatientCategory.ADULT_FEMALE, age = 32)
-        val result = engine.analyze(
-            bitmap = testBitmap,
-            sampleType = "Conjuntiva Ocular",
-            patientProfile = profile
-        )
+        val result = AnemiaInferenceEngine(appContext).use { engine ->
+            engine.analyze(
+                bitmap = testBitmap,
+                sampleType = "Conjuntiva Ocular",
+                patientProfile = profile
+            )
+        }
 
         assertNotNull(result)
         assertTrue("El nivel de Hb debe estar en rango fisiológico", result.hemoglobinLevel in 5.0..18.0)
@@ -83,10 +84,14 @@ class AnemiaAppIntegrationTest {
         assertNotNull(result.severity)
         assertTrue("Debe incluir recomendaciones clínicas", result.recommendations.isNotEmpty())
 
-        // Validar almacenamiento en la base de datos local
-        historyRepo.saveResult(result)
-        val history = historyRepo.getAllResults()
-        assertTrue("El historial debe contener al menos el resultado recién guardado", history.isNotEmpty())
-        assertEquals(result.id, history.first().id)
+        // Validar almacenamiento en la base de datos local sin dejar datos residuales
+        try {
+            historyRepo.saveResult(result)
+            val history = historyRepo.getAllResults()
+            assertTrue("El historial debe contener al menos el resultado recién guardado", history.isNotEmpty())
+            assertEquals(result.id, history.first().id)
+        } finally {
+            historyRepo.deleteResult(result.id)
+        }
     }
 }

@@ -77,6 +77,7 @@ import com.anemia.detection.theme.ClinicalPrimary
 import com.anemia.detection.theme.ClinicalPrimaryDark
 import com.anemia.detection.theme.ClinicalTextSecondary
 import com.anemia.detection.theme.SeverityNormal
+import com.anemia.detection.ui.components.HardwareInfoCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -372,6 +373,18 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 3. Hardware Detectado y Motor de IA (Movido desde Inicio a Configuración)
+            HardwareInfoCard(
+                profile = deviceProfile,
+                onConfigureClick = {
+                    val modes = ModelSelectionMode.entries
+                    val nextMode = modes[(modes.indexOf(deviceProfile.selectionMode) + 1) % modes.size]
+                    profiler.setModelSelectionMode(nextMode)
+                    deviceProfile = profiler.getDeviceProfile()
+                }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Card(
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = ClinicalCardLowest),

@@ -1,9 +1,12 @@
 package com.anemia.detection.ui.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,21 +18,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,6 +53,12 @@ import com.anemia.detection.theme.ClinicalOnSurface
 import com.anemia.detection.theme.ClinicalOnSurfaceVariant
 import com.anemia.detection.theme.ClinicalPrimary
 import com.anemia.detection.theme.ClinicalTextSecondary
+import com.anemia.detection.theme.SeverityNormal
+
+object SampleTypes {
+    const val EYE = "Interior del Ojo"
+    const val NAIL = "Uña de la Mano"
+}
 
 @Composable
 fun ModeOptionItem(
@@ -238,7 +256,7 @@ fun SingleShotCard(selectedSampleType: String) {
             )
             ProtocolStep(
                 number = "2",
-                text = if (selectedSampleType == "Interior del Ojo") {
+                text = if (selectedSampleType == SampleTypes.EYE) {
                     "Baja con suavidad el párpado inferior con la yema del pulgar hasta ver el color rosado interior."
                 } else {
                     "Apoya la mano relajada sobre una mesa blanca con la uña libre de esmalte."
@@ -248,6 +266,251 @@ fun SingleShotCard(selectedSampleType: String) {
                 number = "3",
                 text = "Mantén el teléfono a 20-25 cm de distancia y enfoca con nitidez antes de disparar."
             )
+        }
+    }
+}
+
+@Composable
+fun MultiShotGuidedCard(
+    sampleType: String,
+    capturedBitmaps: List<Bitmap>,
+    onDeletePhoto: (Int) -> Unit,
+    onClearAll: () -> Unit
+) {
+    val totalShots = 4
+    val currentStep = capturedBitmaps.size
+
+    val (currentTitle, currentInstruction) = when {
+        sampleType.contains("Ojo") -> when (currentStep) {
+            0 -> Pair("Toma 1 de 4: Ojo Derecho", "Baja suavemente el párpado inferior derecho con la yema del dedo hasta ver el color rosado.")
+            1 -> Pair("Toma 2 de 4: Ojo Derecho", "Segunda toma del ojo derecho asegurando buena luz y enfoque.")
+            2 -> Pair("Toma 3 de 4: Ojo Izquierdo", "Ahora haz lo mismo bajando suavemente el párpado inferior izquierdo.")
+            3 -> Pair("Toma 4 de 4: Ojo Izquierdo", "Última toma para completar las 4 fotos de máxima precisión.")
+            else -> Pair("¡Fotos completas (4/4)!", "Presiona 'Analizar Chequeo Completo' para obtener tu nivel de hemoglobina.")
+        }
+        else -> when (currentStep) {
+            0 -> Pair("Toma 1 de 4: Mano Derecha", "Coloca la mano derecha sobre fondo blanco y enfoca la uña del pulgar.")
+            1 -> Pair("Toma 2 de 4: Mano Derecha", "Segunda foto de la mano derecha asegurando nitidez.")
+            2 -> Pair("Toma 3 de 4: Mano Izquierda", "Ahora enfoca la uña del pulgar de la mano izquierda.")
+            3 -> Pair("Toma 4 de 4: Mano Izquierda", "Última foto para completar la revisión de ambas manos.")
+            else -> Pair("¡Fotos completas (4/4)!", "Presiona 'Analizar Chequeo Completo' para procesar los resultados.")
+        }
+    }
+
+    Card(
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = ClinicalCardLowest),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(ClinicalContainerHigh, RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Science,
+                            contentDescription = null,
+                            tint = ClinicalPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Secuencia de 4 Fotos",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ClinicalOnSurface
+                    )
+                }
+
+                if (capturedBitmaps.isNotEmpty()) {
+                    TextButton(onClick = onClearAll) {
+                        Text("Reiniciar", fontSize = 12.sp, color = Color.Red)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Indicadores de Paso (1, 2, 3, 4)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                for (i in 0 until totalShots) {
+                    val isDone = i < capturedBitmaps.size
+                    val isCurrent = i == capturedBitmaps.size
+                    val stepLabel = if (i < 2) "Der #${i + 1}" else "Izq #${i - 1}"
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(
+                                    when {
+                                        isDone -> SeverityNormal
+                                        isCurrent -> ClinicalPrimary
+                                        else -> Color(0xFFE2E8F0)
+                                    },
+                                    CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isDone) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            } else {
+                                Text(
+                                    text = "${i + 1}",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isCurrent) Color.White else Color.Gray
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = stepLabel,
+                            fontSize = 10.sp,
+                            fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isCurrent) ClinicalPrimary else Color.Gray
+                        )
+                    }
+
+                    if (i < totalShots - 1) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(2.dp)
+                                .padding(horizontal = 6.dp)
+                                .background(if (i < capturedBitmaps.size) SeverityNormal else Color(0xFFE2E8F0))
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Instrucción Paso Actual
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(ClinicalContainerLow, RoundedCornerShape(12.dp))
+                    .padding(12.dp)
+            ) {
+                Column {
+                    Text(
+                        text = currentTitle,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ClinicalPrimary
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = currentInstruction,
+                        fontSize = 11.sp,
+                        color = ClinicalOnSurfaceVariant,
+                        lineHeight = 15.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Miniaturas de Fotos Tomadas
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                capturedBitmaps.forEachIndexed { index, bitmap ->
+                    Box(
+                        modifier = Modifier
+                            .size(width = 72.dp, height = 90.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .border(1.5.dp, SeverityNormal, RoundedCornerShape(10.dp))
+                    ) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = "Toma ${index + 1}",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(2.dp)
+                                .size(22.dp)
+                                .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                                .clickable { onDeletePhoto(index) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Eliminar",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .background(Color.Black.copy(alpha = 0.6f))
+                                .padding(vertical = 1.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "#${index + 1}",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                // Espacios pendientes
+                for (j in capturedBitmaps.size until totalShots) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 72.dp, height = 90.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .border(1.dp, Color(0xFFCFD8DC), RoundedCornerShape(10.dp))
+                            .background(Color(0xFFFAFAFA)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = null,
+                                tint = Color.LightGray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Toma ${j + 1}",
+                                fontSize = 10.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

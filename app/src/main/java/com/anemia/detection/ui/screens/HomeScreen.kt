@@ -83,11 +83,13 @@ import com.anemia.detection.theme.ClinicalTextSecondary
 import com.anemia.detection.theme.SeverityMild
 import com.anemia.detection.theme.SeverityMildContainer
 import com.anemia.detection.theme.SeverityModerate
+import com.anemia.detection.theme.SeverityModerateContainer
 import com.anemia.detection.theme.SeverityNormal
 import com.anemia.detection.theme.SeverityNormalContainer
 import com.anemia.detection.theme.SeveritySevere
 import com.anemia.detection.theme.SeveritySevereContainer
 import com.anemia.detection.ui.components.NutritionGuideDialog
+import com.anemia.detection.ui.components.SampleTypes
 import com.anemia.detection.ui.components.VisualCaptureGuideDialog
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -419,7 +421,7 @@ fun HomeScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     val res = lastResult
                     val hbValue = res?.hemoglobinLevel ?: 12.8
-                    val severity = res?.severity ?: AnemiaSeverity.NORMAL
+                    val severity = res?.severity
                     val dateStr = if (res != null) {
                         SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault()).format(Date(res.timestamp))
                     } else {
@@ -429,16 +431,20 @@ fun HomeScreen(
                     val severityColor = when (severity) {
                         AnemiaSeverity.NORMAL -> SeverityNormal
                         AnemiaSeverity.MILD -> SeverityMild
-                        AnemiaSeverity.MODERATE -> Color(0xFFEA580C)
-                        AnemiaSeverity.SEVERE -> Color(0xFFDC2626)
+                        AnemiaSeverity.MODERATE -> SeverityModerate
+                        AnemiaSeverity.SEVERE -> SeveritySevere
+                        null -> ClinicalTextSecondary
                     }
 
                     val severityBg = when (severity) {
                         AnemiaSeverity.NORMAL -> SeverityNormalContainer
                         AnemiaSeverity.MILD -> SeverityMildContainer
-                        AnemiaSeverity.MODERATE -> Color(0xFFFFF7ED)
+                        AnemiaSeverity.MODERATE -> SeverityModerateContainer
                         AnemiaSeverity.SEVERE -> SeveritySevereContainer
+                        null -> ClinicalContainerHigh
                     }
+
+                    val badgeLabel = severity?.displayName ?: "Sin Evaluar"
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -493,7 +499,7 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Text(
-                                    text = severity.displayName,
+                                    text = badgeLabel,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = severityColor
@@ -524,7 +530,7 @@ fun HomeScreen(
                                 )
                                 Row(verticalAlignment = Alignment.Bottom) {
                                     Text(
-                                        text = String.format(Locale.US, "%.1f", hbValue),
+                                        text = if (res != null) String.format(Locale.US, "%.1f", hbValue) else "--.-",
                                         fontSize = 28.sp,
                                         fontWeight = FontWeight.ExtraBold,
                                         color = severityColor
@@ -548,10 +554,10 @@ fun HomeScreen(
 
                             val trackGradient = Brush.horizontalGradient(
                                 colors = listOf(
-                                    Color(0xFFDC2626), // Anemia Crítica / Severa (<8.0)
-                                    Color(0xFFEA580C), // Anemia Moderada (8.0 - 10.9)
-                                    Color(0xFFD97706), // Anemia Leve (11.0 - 11.9)
-                                    Color(0xFF059669)  // Rango Normal Óptimo (>=12.0)
+                                    SeveritySevere,   // Anemia Crítica / Severa (<8.0)
+                                    SeverityModerate, // Anemia Moderada (8.0 - 10.9)
+                                    SeverityMild,     // Anemia Leve (11.0 - 11.9)
+                                    SeverityNormal    // Rango Normal Óptimo (>=12.0)
                                 )
                             )
 
@@ -572,22 +578,24 @@ fun HomeScreen(
                                         .background(trackGradient, RoundedCornerShape(4.dp))
                                 )
 
-                                // Indicador / Pin de posición de la medición
-                                val pinOffset = (totalWidth - pinSize) * hbFraction
-                                Box(
-                                    modifier = Modifier
-                                        .offset(x = pinOffset)
-                                        .size(pinSize)
-                                        .shadow(3.dp, CircleShape)
-                                        .background(Color.White, CircleShape)
-                                        .border(2.5.dp, severityColor, CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
+                                if (res != null) {
+                                    // Indicador / Pin de posición de la medición
+                                    val pinOffset = (totalWidth - pinSize) * hbFraction
                                     Box(
                                         modifier = Modifier
-                                            .size(5.dp)
-                                            .background(severityColor, CircleShape)
-                                    )
+                                            .offset(x = pinOffset)
+                                            .size(pinSize)
+                                            .shadow(3.dp, CircleShape)
+                                            .background(Color.White, CircleShape)
+                                            .border(2.5.dp, severityColor, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(5.dp)
+                                                .background(severityColor, CircleShape)
+                                        )
+                                    }
                                 }
                             }
 
@@ -597,9 +605,9 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Anemia (<11.0)", fontSize = 10.sp, color = Color(0xFFDC2626), fontWeight = FontWeight.SemiBold)
-                                Text("Límite (11-12)", fontSize = 10.sp, color = Color(0xFFD97706), fontWeight = FontWeight.SemiBold)
-                                Text("Normal (≥12.0)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF059669))
+                                Text("Anemia (<11.0)", fontSize = 10.sp, color = SeveritySevere, fontWeight = FontWeight.SemiBold)
+                                Text("Límite (11-12)", fontSize = 10.sp, color = SeverityMild, fontWeight = FontWeight.SemiBold)
+                                Text("Normal (≥12.0)", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = SeverityNormal)
                             }
                         }
                     }
@@ -849,7 +857,7 @@ fun HomeScreen(
 
         if (showVisualGuideDialog) {
             VisualCaptureGuideDialog(
-                initialSampleType = "Interior del Ojo",
+                initialSampleType = SampleTypes.EYE,
                 onDismiss = { showVisualGuideDialog = false }
             )
         }

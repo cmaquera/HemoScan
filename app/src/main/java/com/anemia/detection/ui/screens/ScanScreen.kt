@@ -3,14 +3,11 @@ package com.anemia.detection.ui.screens
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,29 +24,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PanTool
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Science
-import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -59,6 +46,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,13 +55,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anemia.detection.engine.AnemiaInferenceEngine
@@ -85,24 +69,23 @@ import com.anemia.detection.models.PatientProfile
 import com.anemia.detection.storage.HistoryRepository
 import com.anemia.detection.theme.ClinicalBackground
 import com.anemia.detection.theme.ClinicalCardLowest
-import com.anemia.detection.theme.ClinicalContainer
 import com.anemia.detection.theme.ClinicalContainerHigh
-import com.anemia.detection.theme.ClinicalContainerLow
 import com.anemia.detection.theme.ClinicalOnSurface
-import com.anemia.detection.theme.ClinicalOnSurfaceVariant
 import com.anemia.detection.theme.ClinicalPrimary
-import com.anemia.detection.theme.ClinicalPrimaryDark
 import com.anemia.detection.theme.ClinicalTextSecondary
-import com.anemia.detection.theme.SeverityNormal
 import com.anemia.detection.ui.components.AnalyzingView
 import com.anemia.detection.ui.components.ModeOptionItem
+import com.anemia.detection.ui.components.MultiShotGuidedCard
 import com.anemia.detection.ui.components.SampleOptionItem
+import com.anemia.detection.ui.components.SampleTypes
 import com.anemia.detection.ui.components.SingleShotCard
 import com.anemia.detection.ui.components.VisualCaptureGuideDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "ScanScreen"
 
 enum class ScanCaptureMode {
     MULTI_SHOT,  // Modo Guiado (4 Fotos)
@@ -124,8 +107,14 @@ fun ScanScreen(
     val historyRepo = remember { HistoryRepository(context) }
     val profiler = remember { DeviceProfiler(context) }
 
+    DisposableEffect(inferenceEngine) {
+        onDispose {
+            inferenceEngine.close()
+        }
+    }
+
     var scanMode by remember { mutableStateOf(ScanCaptureMode.MULTI_SHOT) }
-    var selectedSampleType by remember { mutableStateOf("Interior del Ojo") }
+    var selectedSampleType by remember { mutableStateOf(SampleTypes.EYE) }
     val capturedBitmaps = remember { mutableStateListOf<Bitmap>() }
 
     var isAnalyzing by remember { mutableStateOf(false) }
@@ -197,19 +186,23 @@ fun ScanScreen(
     }
 
     fun onPhotoReceived(bitmap: Bitmap, skipQualityCheck: Boolean = false) {
-        if (!skipQualityCheck) {
-            val quality = preprocessor.assessQuality(bitmap)
-            if (!quality.isValid) {
-                pendingQualityWarning = Pair(bitmap, quality)
-                return
+        coroutineScope.launch {
+            if (!skipQualityCheck) {
+                val quality = withContext(Dispatchers.Default) {
+                    preprocessor.assessQuality(bitmap)
+                }
+                if (!quality.isValid) {
+                    pendingQualityWarning = Pair(bitmap, quality)
+                    return@launch
+                }
             }
-        }
 
-        if (scanMode == ScanCaptureMode.SINGLE_SHOT) {
-            executeSingleInference(bitmap)
-        } else {
-            if (capturedBitmaps.size < 4) {
-                capturedBitmaps.add(bitmap)
+            if (scanMode == ScanCaptureMode.SINGLE_SHOT) {
+                executeSingleInference(bitmap)
+            } else {
+                if (capturedBitmaps.size < 4) {
+                    capturedBitmaps.add(bitmap)
+                }
             }
         }
     }
@@ -223,14 +216,18 @@ fun ScanScreen(
         }
     }
 
-    // Lanzador de Galería
+    // Lanzador de Galería (decodificación fuera del hilo principal)
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            val bitmap = preprocessor.loadBitmapFromUri(context, uri)
-            if (bitmap != null) {
-                onPhotoReceived(bitmap)
+            coroutineScope.launch {
+                val bitmap = withContext(Dispatchers.IO) {
+                    preprocessor.loadBitmapFromUri(context, uri)
+                }
+                if (bitmap != null) {
+                    onPhotoReceived(bitmap)
+                }
             }
         }
     }
@@ -241,24 +238,27 @@ fun ScanScreen(
         try {
             cameraLauncher.launch(null)
         } catch (e: Exception) {
+            Log.w(TAG, "No se pudo iniciar la cámara nativa: ${e.message}")
             noCameraAlert = true
         }
     }
 
     fun loadDemoSamples() {
-        try {
-            val sampleNames = listOf("eye_right_1.png", "eye_right_2.png", "eye_left_1.png", "eye_left_2.png")
-            capturedBitmaps.clear()
-            for (name in sampleNames) {
-                context.assets.open("samples/$name").use { stream ->
-                    val bmp = BitmapFactory.decodeStream(stream)
-                    if (bmp != null) {
-                        capturedBitmaps.add(bmp)
+        coroutineScope.launch {
+            try {
+                val sampleNames = listOf("eye_right_1.png", "eye_right_2.png", "eye_left_1.png", "eye_left_2.png")
+                val loaded = withContext(Dispatchers.IO) {
+                    sampleNames.mapNotNull { name ->
+                        context.assets.open("samples/$name").use { stream ->
+                            BitmapFactory.decodeStream(stream)
+                        }
                     }
                 }
+                capturedBitmaps.clear()
+                capturedBitmaps.addAll(loaded)
+            } catch (e: Exception) {
+                Log.w(TAG, "No se pudieron cargar las muestras de demostración: ${e.message}")
             }
-        } catch (e: Exception) {
-            // Silently ignore if assets not found
         }
     }
 
@@ -350,20 +350,20 @@ fun ScanScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SampleOptionItem(
-                        title = "Interior del Ojo",
+                        title = SampleTypes.EYE,
                         subtitle = "Párpado inferior",
                         icon = Icons.Default.RemoveRedEye,
-                        isSelected = selectedSampleType == "Interior del Ojo",
-                        onClick = { selectedSampleType = "Interior del Ojo" },
+                        isSelected = selectedSampleType == SampleTypes.EYE,
+                        onClick = { selectedSampleType = SampleTypes.EYE },
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     SampleOptionItem(
-                        title = "Uña de la Mano",
+                        title = SampleTypes.NAIL,
                         subtitle = "Uña limpia sin esmalte",
                         icon = Icons.Default.PanTool,
-                        isSelected = selectedSampleType == "Uña de la Mano",
-                        onClick = { selectedSampleType = "Uña de la Mano" },
+                        isSelected = selectedSampleType == SampleTypes.NAIL,
+                        onClick = { selectedSampleType = SampleTypes.NAIL },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -390,7 +390,7 @@ fun ScanScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = if (selectedSampleType == "Interior del Ojo") Icons.Default.Visibility else Icons.Default.PanTool,
+                                imageVector = if (selectedSampleType == SampleTypes.EYE) Icons.Default.Visibility else Icons.Default.PanTool,
                                 contentDescription = null,
                                 tint = ClinicalPrimary,
                                 modifier = Modifier.size(26.dp)
@@ -399,7 +399,7 @@ fun ScanScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (selectedSampleType == "Interior del Ojo")
+                                text = if (selectedSampleType == SampleTypes.EYE)
                                     "Cómo enfocar el ojo correctamente"
                                 else
                                     "Cómo enfocar la uña correctamente",
@@ -409,7 +409,7 @@ fun ScanScreen(
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = if (selectedSampleType == "Interior del Ojo")
+                                text = if (selectedSampleType == SampleTypes.EYE)
                                     "Baja suavemente la piel debajo de las pestañas hasta ver el color rosado natural."
                                 else
                                     "Apoya la mano sobre una mesa clara con la uña libre de esmalte.",
@@ -561,14 +561,20 @@ fun ScanScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     TextButton(
                         onClick = {
-                            try {
-                                context.assets.open("samples/eye_right_1.png").use { stream ->
-                                    val bmp = BitmapFactory.decodeStream(stream)
+                            coroutineScope.launch {
+                                try {
+                                    val bmp = withContext(Dispatchers.IO) {
+                                        context.assets.open("samples/eye_right_1.png").use { stream ->
+                                            BitmapFactory.decodeStream(stream)
+                                        }
+                                    }
                                     if (bmp != null) {
                                         onPhotoReceived(bmp)
                                     }
+                                } catch (e: Exception) {
+                                    Log.w(TAG, "Error cargando foto de prueba: ${e.message}")
                                 }
-                            } catch (e: Exception) {}
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -634,254 +640,3 @@ fun ScanScreen(
         }
     }
 }
-
-
-@Composable
-private fun MultiShotGuidedCard(
-    sampleType: String,
-    capturedBitmaps: List<Bitmap>,
-    onDeletePhoto: (Int) -> Unit,
-    onClearAll: () -> Unit
-) {
-    val totalShots = 4
-    val currentStep = capturedBitmaps.size
-
-    val (currentTitle, currentInstruction) = when {
-        sampleType.contains("Ojo") -> when (currentStep) {
-            0 -> Pair("Toma 1 de 4: Ojo Derecho", "Baja suavemente el párpado inferior derecho con la yema del dedo hasta ver el color rosado.")
-            1 -> Pair("Toma 2 de 4: Ojo Derecho", "Segunda toma del ojo derecho asegurando buena luz y enfoque.")
-            2 -> Pair("Toma 3 de 4: Ojo Izquierdo", "Ahora haz lo mismo bajando suavemente el párpado inferior izquierdo.")
-            3 -> Pair("Toma 4 de 4: Ojo Izquierdo", "Última toma para completar las 4 fotos de máxima precisión.")
-            else -> Pair("¡Fotos completas (4/4)!", "Presiona 'Analizar Chequeo Completo' para obtener tu nivel de hemoglobina.")
-        }
-        else -> when (currentStep) {
-            0 -> Pair("Toma 1 de 4: Mano Derecha", "Coloca la mano derecha sobre fondo blanco y enfoca la uña del pulgar.")
-            1 -> Pair("Toma 2 de 4: Mano Derecha", "Segunda foto de la mano derecha asegurando nitidez.")
-            2 -> Pair("Toma 3 de 4: Mano Izquierda", "Ahora enfoca la uña del pulgar de la mano izquierda.")
-            3 -> Pair("Toma 4 de 4: Mano Izquierda", "Última foto para completar la revisión de ambas manos.")
-            else -> Pair("¡Fotos completas (4/4)!", "Presiona 'Analizar Chequeo Completo' para procesar los resultados.")
-        }
-    }
-
-    Card(
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = ClinicalCardLowest),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .background(ClinicalContainerHigh, RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Science,
-                            contentDescription = null,
-                            tint = ClinicalPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Secuencia de 4 Fotos",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ClinicalOnSurface
-                    )
-                }
-
-                if (capturedBitmaps.isNotEmpty()) {
-                    TextButton(onClick = onClearAll) {
-                        Text("Reiniciar", fontSize = 12.sp, color = Color.Red)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Indicadores de Paso (1, 2, 3, 4)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                for (i in 0 until totalShots) {
-                    val isDone = i < capturedBitmaps.size
-                    val isCurrent = i == capturedBitmaps.size
-                    val stepLabel = if (sampleType.contains("Ojo")) {
-                        if (i < 2) "Der #${i + 1}" else "Izq #${i - 1}"
-                    } else {
-                        if (i < 2) "Der #${i + 1}" else "Izq #${i - 1}"
-                    }
-
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .background(
-                                    when {
-                                        isDone -> SeverityNormal
-                                        isCurrent -> ClinicalPrimary
-                                        else -> Color(0xFFE2E8F0)
-                                    },
-                                    CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isDone) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            } else {
-                                Text(
-                                    text = "${i + 1}",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isCurrent) Color.White else Color.Gray
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Text(
-                            text = stepLabel,
-                            fontSize = 10.sp,
-                            fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isCurrent) ClinicalPrimary else Color.Gray
-                        )
-                    }
-
-                    if (i < totalShots - 1) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(2.dp)
-                                .padding(horizontal = 6.dp)
-                                .background(if (i < capturedBitmaps.size) SeverityNormal else Color(0xFFE2E8F0))
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Instrucción Paso Actual
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(ClinicalContainerLow, RoundedCornerShape(12.dp))
-                    .padding(12.dp)
-            ) {
-                Column {
-                    Text(
-                        text = currentTitle,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ClinicalPrimary
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = currentInstruction,
-                        fontSize = 11.sp,
-                        color = ClinicalOnSurfaceVariant,
-                        lineHeight = 15.sp
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Miniaturas de Fotos Tomadas
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                capturedBitmaps.forEachIndexed { index, bitmap ->
-                    Box(
-                        modifier = Modifier
-                            .size(width = 72.dp, height = 90.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .border(1.5.dp, SeverityNormal, RoundedCornerShape(10.dp))
-                    ) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = "Toma ${index + 1}",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(2.dp)
-                                .size(22.dp)
-                                .background(Color.Black.copy(alpha = 0.6f), CircleShape)
-                                .clickable { onDeletePhoto(index) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Eliminar",
-                                tint = Color.White,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .background(Color.Black.copy(alpha = 0.6f))
-                                .padding(vertical = 1.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "#${index + 1}",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-
-                // Espacios pendientes
-                for (j in capturedBitmaps.size until totalShots) {
-                    Box(
-                        modifier = Modifier
-                            .size(width = 72.dp, height = 90.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .border(1.dp, Color(0xFFCFD8DC), RoundedCornerShape(10.dp))
-                            .background(Color(0xFFFAFAFA)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.CameraAlt,
-                                contentDescription = null,
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Toma ${j + 1}",
-                                fontSize = 10.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-

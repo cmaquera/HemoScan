@@ -37,14 +37,17 @@ def evaluate_model():
     print(f"Firma de Entrada: {input_details[0]['shape']} ({input_details[0]['dtype'].__name__})")
     print(f"Firma de Salida: {[d['shape'].tolist() for d in output_details]} ({output_details[0]['dtype'].__name__})")
 
-    # Cargar metadatos
-    records = []
+    # Cargar metadatos y aislar el conjunto de validación (Hold-out 20% agrupado por paciente)
+    all_records = []
     with open(METADATA_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            records.append(row)
+            all_records.append(row)
 
-    print(f"\nEvaluando inferencia sobre {len(records)} muestras clínicas reales...")
+    from train import split_records_by_patient
+    _, records = split_records_by_patient(all_records, train_ratio=0.8, seed=42)
+
+    print(f"\nEvaluando inferencia sobre {len(records)} muestras clínicas de validación (Hold-out 20% sin fuga de datos, de {len(all_records)} totales)...")
 
     y_true_clf = []
     y_pred_prob = []
@@ -83,8 +86,8 @@ def evaluate_model():
             y_true_hb.append(float(r["hb_level"]))
             y_pred_hb.append(hb)
             valid_count += 1
-        except Exception as e:
-            pass
+        except (OSError, ValueError) as exc:
+            print(f"[WARN] Muestra omitida en índice {idx} ({img_rel}): {exc}")
 
     y_true_clf = np.array(y_true_clf)
     y_pred_prob = np.array(y_pred_prob)
@@ -119,20 +122,20 @@ def evaluate_model():
 
     try:
         auc = roc_auc_score(y_true_clf, y_pred_prob)
-    except:
+    except ValueError:
         auc = 0.5
 
     mae_hb = mean_absolute_error(y_true_hb, y_pred_hb)
     from scipy.stats import pearsonr
     try:
         r_corr, _ = pearsonr(y_true_hb, y_pred_hb)
-    except:
+    except ValueError:
         r_corr = 0.0
 
     print("\n" + "="*75)
-    print("INFORME DE RENDIMIENTO DIAGNÓSTICO (EVALUACIÓN 100% REAL)")
+    print("INFORME DE RENDIMIENTO DIAGNÓSTICO (PARTICIÓN DE VALIDACIÓN HOLD-OUT)")
     print("="*75)
-    print(f"Total Muestras Evaluadas: {valid_count}")
+    print(f"Total Muestras Evaluadas (Hold-out): {valid_count}")
     print(f"Área Bajo la Curva (AUC-ROC):             {auc * 100:.2f}%")
     print(f"Error Absoluto Medio en Hemoglobina (MAE): {mae_hb:.2f} g/dL (r = {r_corr:.3f})")
     print("\n--- Con Umbral Estándar Clínico (Threshold = 0.50) ---")

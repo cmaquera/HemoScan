@@ -56,6 +56,44 @@ def create_tf_dataset(records, is_training=True, batch_size=16):
     dataset = dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
     return dataset
 
+def extract_patient_group(record):
+    """
+    Extrae un identificador único de paciente a partir del registro clínico para garantizar
+    que múltiples recortes o vistas de un mismo paciente permanezcan en la misma partición.
+    """
+    if "patient_id" in record and record["patient_id"]:
+        return str(record["patient_id"])
+    img_path = record.get("image_path", "").replace("\\", "/")
+    parts = [p for p in img_path.split("/") if p]
+    if len(parts) >= 3:
+        return f"{parts[0]}_{parts[1]}"
+    filename = os.path.splitext(os.path.basename(img_path))[0]
+    base_tokens = filename.split("_")
+    if len(base_tokens) >= 2:
+        return f"{parts[0] if parts else 'cohort'}_{base_tokens[0]}_{base_tokens[1]}"
+    return filename
+
+def split_records_by_patient(records, train_ratio=0.8, seed=42):
+    """
+    Divide los registros en entrenamiento y validación agrupando por paciente (Group Split)
+    para evitar fuga de datos entre train y val.
+    """
+    groups = {}
+    for rec in records:
+        gid = extract_patient_group(rec)
+        groups.setdefault(gid, []).append(rec)
+
+    unique_groups = list(groups.keys())
+    rng = np.random.RandomState(seed)
+    rng.shuffle(unique_groups)
+
+    split_idx = int(train_ratio * len(unique_groups))
+    train_groups = set(unique_groups[:split_idx])
+
+    train_records = [r for r in records if extract_patient_group(r) in train_groups]
+    val_records = [r for r in records if extract_patient_group(r) not in train_groups]
+    return train_records, val_records
+
 def train_and_evaluate(epochs=5, batch_size=16):
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
@@ -67,13 +105,9 @@ def train_and_evaluate(epochs=5, batch_size=16):
     records = load_dataset_records(METADATA_FILE)
     print(f"Cargados {len(records)} registros clínicos.")
 
-    # División 80% Entrenamiento, 20% Validación
-    np.random.seed(42)
-    indices = np.random.permutation(len(records))
-    split = int(0.8 * len(records))
-
-    train_records = [records[i] for i in indices[:split]]
-    val_records = [records[i] for i in indices[split:]]
+    # División 80% Entrenamiento, 20% Validación agrupada por paciente (sin fuga de datos)
+    train_records, val_records = split_records_by_patient(records, train_ratio=0.8, seed=42)
+    print(f"Partición por paciente: {len(train_records)} Train / {len(val_records)} Val (Hold-out)")
 
     train_ds = create_tf_dataset(train_records, is_training=True, batch_size=batch_size)
     val_ds = create_tf_dataset(val_records, is_training=False, batch_size=batch_size)

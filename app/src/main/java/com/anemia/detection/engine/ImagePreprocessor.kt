@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import java.io.InputStream
+import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.ln
@@ -28,19 +28,84 @@ data class PreprocessedData(
 class ImagePreprocessor {
 
     companion object {
+        private const val TAG = "ImagePreprocessor"
         const val TARGET_SIZE = 224 // 224x224x3 para MobileNetV3 y Vision Transformer
         private const val PIXEL_CHANNELS = 3
+        private const val MAX_DECODE_DIMENSION = 1024
+
+        fun calculateLuminance(r: Int, g: Int, b: Int): Double {
+            return 0.299 * r + 0.587 * g + 0.114 * b
+        }
+
+        fun calculateRednessRatio(meanR: Double, meanG: Double): Double {
+            return if (meanG > 0) meanR / (meanG + 0.1) else 1.0
+        }
+
+        fun calculateErythemaIndex(meanR: Double, meanG: Double): Double {
+            val safeR = max(1.0, meanR)
+            val safeG = max(1.0, meanG)
+            return ln(safeR) - ln(safeG)
+        }
+
+        fun evaluateLuminanceQuality(avgLum: Double): QualityReport {
+            return when {
+                avgLum < 40.0 -> QualityReport(
+                    isValid = false,
+                    message = "La imagen está demasiado oscura. Activa el flash de la cámara para estandarizar la iluminación.",
+                    averageLuminance = avgLum,
+                    flashLikelyUsed = false
+                )
+                avgLum > 245.0 -> QualityReport(
+                    isValid = false,
+                    message = "La imagen está sobreexpuesta o con brillo excesivo. Evita apuntar a fuentes de luz directa.",
+                    averageLuminance = avgLum,
+                    flashLikelyUsed = true
+                )
+                else -> QualityReport(
+                    isValid = true,
+                    message = "Iluminación adecuada para análisis de biomarcadores.",
+                    averageLuminance = avgLum,
+                    flashLikelyUsed = avgLum > 90.0
+                )
+            }
+        }
+
+        private fun calculateInSampleSize(width: Int, height: Int, maxDim: Int): Int {
+            var inSampleSize = 1
+            if (height > maxDim || width > maxDim) {
+                val halfHeight = height / 2
+                val halfWidth = width / 2
+                while ((halfHeight / inSampleSize) >= maxDim && (halfWidth / inSampleSize) >= maxDim) {
+                    inSampleSize *= 2
+                }
+            }
+            return inSampleSize
+        }
     }
 
     fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap? {
-        var input: InputStream? = null
         return try {
-            input = context.contentResolver.openInputStream(uri)
-            BitmapFactory.decodeStream(input)
+            val boundsOptions = BitmapFactory.Options().apply {
+                inJustDecodeBounds = true
+            }
+            context.contentResolver.openInputStream(uri)?.use { boundsStream ->
+                BitmapFactory.decodeStream(boundsStream, null, boundsOptions)
+            }
+
+            val decodeOptions = BitmapFactory.Options().apply {
+                inSampleSize = calculateInSampleSize(
+                    boundsOptions.outWidth,
+                    boundsOptions.outHeight,
+                    MAX_DECODE_DIMENSION
+                )
+            }
+
+            context.contentResolver.openInputStream(uri)?.use { decodeStream ->
+                BitmapFactory.decodeStream(decodeStream, null, decodeOptions)
+            }
         } catch (e: Exception) {
+            Log.w(TAG, "Error decodificando Bitmap desde URI: ${e.message}")
             null
-        } finally {
-            input?.close()
         }
     }
 
@@ -62,35 +127,13 @@ class ImagePreprocessor {
                 val g = (pixel shr 8) and 0xFF
                 val b = pixel and 0xFF
 
-                // Luminancia estándar Y = 0.299R + 0.587G + 0.114B
-                val lum = 0.299 * r + 0.587 * g + 0.114 * b
-                totalLum += lum
+                totalLum += calculateLuminance(r, g, b)
                 count++
             }
         }
 
         val avgLum = if (count > 0) totalLum / count else 0.0
-
-        return when {
-            avgLum < 40.0 -> QualityReport(
-                isValid = false,
-                message = "La imagen está demasiado oscura. Activa el flash de la cámara para estandarizar la iluminación.",
-                averageLuminance = avgLum,
-                flashLikelyUsed = false
-            )
-            avgLum > 245.0 -> QualityReport(
-                isValid = false,
-                message = "La imagen está sobreexpuesta o con brillo excesivo. Evita apuntar a fuentes de luz directa.",
-                averageLuminance = avgLum,
-                flashLikelyUsed = true
-            )
-            else -> QualityReport(
-                isValid = true,
-                message = "Iluminación adecuada para análisis de biomarcadores.",
-                averageLuminance = avgLum,
-                flashLikelyUsed = avgLum > 90.0
-            )
-        }
+        return evaluateLuminanceQuality(avgLum)
     }
 
     /**
@@ -132,10 +175,8 @@ class ImagePreprocessor {
         val meanB = sumB / totalPixels
 
         // Biomarcadores cromáticos cuantitativos
-        val rednessRatio = if (meanG > 0) meanR / (meanG + 0.1) else 1.0
-        val safeR = max(1.0, meanR)
-        val safeG = max(1.0, meanG)
-        val erythemaIndex = ln(safeR) - ln(safeG)
+        val rednessRatio = calculateRednessRatio(meanR, meanG)
+        val erythemaIndex = calculateErythemaIndex(meanR, meanG)
         val avgLum = 0.299 * meanR + 0.587 * meanG + 0.114 * meanB
 
         return PreprocessedData(

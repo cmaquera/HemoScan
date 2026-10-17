@@ -42,6 +42,7 @@ import com.anemia.detection.theme.ClinicalTextSecondary
 import com.anemia.detection.theme.SeverityMild
 import com.anemia.detection.theme.SeverityMildContainer
 import com.anemia.detection.theme.SeverityModerate
+import com.anemia.detection.theme.SeverityModerateContainer
 import com.anemia.detection.theme.SeverityNormal
 import com.anemia.detection.theme.SeverityNormalContainer
 import com.anemia.detection.theme.SeveritySevere
@@ -67,7 +68,7 @@ fun HemoglobinGauge(
     val severityBgColor = when (severity) {
         AnemiaSeverity.NORMAL -> SeverityNormalContainer
         AnemiaSeverity.MILD -> SeverityMildContainer
-        AnemiaSeverity.MODERATE -> SeveritySevereContainer
+        AnemiaSeverity.MODERATE -> SeverityModerateContainer
         AnemiaSeverity.SEVERE -> SeveritySevereContainer
     }
 

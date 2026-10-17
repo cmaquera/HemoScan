@@ -8,6 +8,7 @@ import com.anemia.detection.models.DetectionResult
 import com.anemia.detection.models.PatientCategory
 import com.anemia.detection.models.PatientProfile
 import org.tensorflow.lite.Interpreter
+import java.io.Closeable
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
@@ -15,7 +16,7 @@ import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
-class AnemiaInferenceEngine(private val context: Context) {
+class AnemiaInferenceEngine(private val context: Context) : Closeable {
 
     companion object {
         private const val TAG = "AnemiaInferenceEngine"
@@ -28,7 +29,7 @@ class AnemiaInferenceEngine(private val context: Context) {
     private val preprocessor = ImagePreprocessor()
     private val profiler = DeviceProfiler(context)
 
-    fun close() {
+    override fun close() {
         interpreter?.close()
         interpreter = null
         currentlyLoadedModel = null
@@ -164,14 +165,20 @@ class AnemiaInferenceEngine(private val context: Context) {
         val inferenceTime = System.currentTimeMillis() - startTime
         val threshold = patientProfile.whoThreshold
         val optimalThreshold = if (isLightweight) 0.45 else 0.38
-        val isAnemic = estimatedHb < threshold || anemiaProb >= optimalThreshold
-        val severity = patientProfile.evaluateSeverity(estimatedHb)
+        val roundedHb = (estimatedHb * 10.0).toInt() / 10.0
+        val isAnemic = roundedHb < threshold || anemiaProb >= optimalThreshold
+        val baseSeverity = patientProfile.evaluateSeverity(roundedHb)
+        val severity = if (isAnemic && baseSeverity == AnemiaSeverity.NORMAL) {
+            AnemiaSeverity.MILD
+        } else {
+            baseSeverity
+        }
 
         val recommendations = generateRecommendations(severity)
 
         return DetectionResult(
             isAnemic = isAnemic,
-            hemoglobinLevel = (estimatedHb * 10.0).toInt() / 10.0,
+            hemoglobinLevel = roundedHb,
             confidence = (confidence * 100.0).toInt() / 100.0,
             modelUsed = modelDisplayName,
             inferenceTimeMs = max(18L, inferenceTime),
@@ -223,6 +230,7 @@ class AnemiaInferenceEngine(private val context: Context) {
         }
 
         val avgHb = validResults.map { it.hemoglobinLevel }.average()
+        val roundedAvgHb = (avgHb * 10.0).toInt() / 10.0
         val avgConfidence = (validResults.map { it.confidence }.average() + 0.03).coerceAtMost(0.99)
         val avgRedness = validResults.map { it.rednessRatio }.average()
         val avgErythema = validResults.map { it.erythemaIndex }.average()
@@ -233,8 +241,14 @@ class AnemiaInferenceEngine(private val context: Context) {
 
         val totalTime = System.currentTimeMillis() - startTime
         val primaryResult = validResults.first()
-        val severity = patientProfile.evaluateSeverity(avgHb)
-        val isAnemic = avgHb < patientProfile.whoThreshold
+        val majorityAnemic = validResults.count { it.isAnemic } > (validResults.size / 2)
+        val isAnemic = roundedAvgHb < patientProfile.whoThreshold || majorityAnemic
+        val baseSeverity = patientProfile.evaluateSeverity(roundedAvgHb)
+        val severity = if (isAnemic && baseSeverity == AnemiaSeverity.NORMAL) {
+            AnemiaSeverity.MILD
+        } else {
+            baseSeverity
+        }
 
         val baseRecs = generateRecommendations(severity).toMutableList()
         val discardedCount = bitmaps.size - validResults.size
@@ -247,13 +261,13 @@ class AnemiaInferenceEngine(private val context: Context) {
 
         return DetectionResult(
             isAnemic = isAnemic,
-            hemoglobinLevel = (avgHb * 10.0).toInt() / 10.0,
+            hemoglobinLevel = roundedAvgHb,
             confidence = (avgConfidence * 100.0).toInt() / 100.0,
             modelUsed = "${primaryResult.modelUsed} (Multi-Toma ${bitmaps.size}x)",
             inferenceTimeMs = max(25L, totalTime),
             sampleType = sampleType,
             severity = severity,
-            rednessRatio = (avgRedness * 100.0).toInt() / 10.0,
+            rednessRatio = (avgRedness * 100.0).toInt() / 100.0,
             erythemaIndex = (avgErythema * 1000.0).toInt() / 1000.0,
             imageUri = null,
             recommendations = baseRecs,

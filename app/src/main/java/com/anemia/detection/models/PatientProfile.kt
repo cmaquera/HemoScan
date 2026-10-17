@@ -33,11 +33,19 @@ data class PatientProfile(
     val whoThreshold: Double get() = category.whoThreshold
 
     fun evaluateSeverity(hbLevel: Double): AnemiaSeverity {
-        return when {
-            hbLevel >= whoThreshold -> AnemiaSeverity.NORMAL
-            hbLevel >= 11.0 && whoThreshold > 11.0 -> AnemiaSeverity.MILD
-            hbLevel >= 8.0 -> AnemiaSeverity.MODERATE
-            else -> AnemiaSeverity.SEVERE
+        if (hbLevel >= whoThreshold) return AnemiaSeverity.NORMAL
+        return if (category == PatientCategory.PREGNANT_FEMALE) {
+            when {
+                hbLevel >= 10.0 -> AnemiaSeverity.MILD
+                hbLevel >= 7.0 -> AnemiaSeverity.MODERATE
+                else -> AnemiaSeverity.SEVERE
+            }
+        } else {
+            when {
+                hbLevel >= 11.0 -> AnemiaSeverity.MILD
+                hbLevel >= 8.0 -> AnemiaSeverity.MODERATE
+                else -> AnemiaSeverity.SEVERE
+            }
         }
     }
 }

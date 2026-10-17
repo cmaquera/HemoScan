@@ -9,29 +9,52 @@ Funcionalidades:
 """
 
 import os
+import csv
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 
 ASSETS_MODELS_DIR = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
     "app", "src", "main", "assets", "models"
 )
 CHECKPOINT_DIR = os.path.join(os.path.dirname(__file__), "checkpoints")
+DATASET_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataset")
+METADATA_FILE = os.path.join(DATASET_ROOT, "metadata_unified.csv")
 
 def representative_data_gen():
     """
     Genera tensores de calibración representativos para la cuantización a enteros (INT8).
-    Permite calcular las escalas y puntos cero (Zero Point) de cada capa.
+    Utiliza muestras clínicas reales del dataset cuando están disponibles; en su defecto
+    recurre a tensores sintéticos normalizados en [0.0, 1.0].
     """
-    for _ in range(50):
-        # Simula tensores normalizados en [0.0, 1.0] con variaciones fisiológicas
+    yielded = 0
+    if os.path.exists(METADATA_FILE):
+        with open(METADATA_FILE, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                img_abs = os.path.join(DATASET_ROOT, row.get("image_path", ""))
+                if not os.path.exists(img_abs):
+                    continue
+                try:
+                    img = Image.open(img_abs).convert("RGB").resize((224, 224))
+                    arr = np.array(img, dtype=np.float32) / 255.0
+                    yield [np.expand_dims(arr, axis=0)]
+                    yielded += 1
+                    if yielded >= 100:
+                        return
+                except (OSError, ValueError):
+                    continue
+
+    for _ in range(max(0, 50 - yielded)):
         data = np.random.uniform(0.0, 1.0, size=(1, 224, 224, 3)).astype(np.float32)
         yield [data]
 
 def convert_and_quantize(keras_model, output_filepath):
     """
-    Convierte el modelo de Keras a TFLite aplicando cuantización de pesos (INT8)
-    Manteniendo entradas y salidas float32 para compatibilidad total con CameraX y TFLite.
+    Convierte el modelo de Keras a TFLite aplicando cuantización post-entrenamiento (PTQ)
+    con dataset representativo real, manteniendo entradas y salidas float32 para compatibilidad
+    total con CameraX y TFLite.
     Si el modelo tiene 2 salidas [anemia_prob, hb_level], las concatena en [1, 2]
     para compatibilidad exacta con el buffer de Android.
     """
@@ -43,6 +66,7 @@ def convert_and_quantize(keras_model, output_filepath):
 
     converter = tf.lite.TFLiteConverter.from_keras_model(export_model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.representative_dataset = representative_data_gen
     tflite_model = converter.convert()
 
     os.makedirs(os.path.dirname(output_filepath), exist_ok=True)
