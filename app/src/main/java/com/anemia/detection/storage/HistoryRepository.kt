@@ -63,20 +63,4 @@ class HistoryRepository(context: Context) {
         val list = getAllResults()
         return if (list.isNotEmpty()) list.first() else null
     }
-
-    fun markAsSynced(id: String) = synchronized(LOCK) {
-        val currentList = getAllResults().map {
-            if (it.id == id) it.copy(isSynced = true) else it
-        }
-        persistResults(currentList)
-    }
-
-    fun markAllAsSynced() = synchronized(LOCK) {
-        val currentList = getAllResults().map { it.copy(isSynced = true) }
-        persistResults(currentList)
-    }
-
-    fun getUnsyncedCount(): Int = synchronized(LOCK) {
-        return getAllResults().count { !it.isSynced }
-    }
 }

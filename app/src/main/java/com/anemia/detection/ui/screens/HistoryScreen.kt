@@ -19,11 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -140,7 +138,6 @@ fun HistoryScreen(
             ) {
                 // Cabecera informativa de almacenamiento local
                 item {
-                    val unsynced = historyList.count { !it.isSynced }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -153,15 +150,15 @@ fun HistoryScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "${historyList.size} chequeos en este móvil",
+                                text = "${historyList.size} chequeos guardados",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = ClinicalPrimary
                             )
                             Text(
-                                text = if (unsynced > 0) "$unsynced pendientes de nube" else "Sincronizado al 100%",
+                                text = "100% Privado en tu móvil",
                                 fontSize = 11.sp,
-                                color = if (unsynced > 0) Color(0xFFE65100) else SeverityNormal,
+                                color = SeverityNormal,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -361,25 +358,6 @@ private fun HistoryItemCard(
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             color = ClinicalPrimary,
-                            maxLines = 1,
-                            softWrap = false
-                        )
-                    }
-
-                    // Badge 3: Sincronización (Nube / Local)
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                if (item.isSynced) Color(0xFFE8F5E9) else Color(0xFFF1F5F9),
-                                RoundedCornerShape(6.dp)
-                            )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = if (item.isSynced) "Nube" else "Local",
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (item.isSynced) SeverityNormal else Color(0xFF64748B),
                             maxLines = 1,
                             softWrap = false
                         )

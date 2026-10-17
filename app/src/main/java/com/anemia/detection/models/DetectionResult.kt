@@ -16,8 +16,7 @@ data class DetectionResult(
     val recommendations: List<String>,
     val inferenceMethod: String = "Modelo Neuronal (TFLite)",
     val shotCount: Int = 1,
-    val standardError: Double? = null,
-    val isSynced: Boolean = false
+    val standardError: Double? = null
 ) {
     val isMultiShot: Boolean
         get() {
