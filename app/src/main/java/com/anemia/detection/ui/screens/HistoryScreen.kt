@@ -253,6 +253,12 @@ private fun HistoryItemCard(
         "Uña de la Mano"
     }
 
+    val shortModelLabel = when {
+        item.modelUsed.contains("HemaViT", ignoreCase = true) -> "HemaViT"
+        item.modelUsed.contains("MobileNet", ignoreCase = true) -> "MobileNetV3"
+        else -> "Motor Clínico"
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -262,13 +268,15 @@ private fun HistoryItemCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Nivel de Hemoglobina
+            // 1. Indicador numérico de Hemoglobina (Izquierda, tamaño fijo y cuadrado)
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(56.dp)
                     .background(severityColor.copy(alpha = 0.12f), RoundedCornerShape(14.dp)),
                 contentAlignment = Alignment.Center
             ) {
@@ -277,131 +285,127 @@ private fun HistoryItemCard(
                         text = String.format(Locale.US, "%.1f", item.hemoglobinLevel),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = severityColor
+                        color = severityColor,
+                        maxLines = 1,
+                        softWrap = false
                     )
                     Text(
                         text = "g/dL",
-                        fontSize = 9.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = severityColor
+                        color = severityColor,
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
             }
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Información descriptiva
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = item.severity.displayName,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ClinicalOnSurface
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+            // 2. Bloque central estructurado en 3 líneas limpias sin desbordes
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                // Línea 1: Diagnóstico / Severidad en su propia fila completa
+                Text(
+                    text = item.severity.displayName,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ClinicalOnSurface,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
 
-                    // Etiqueta de Modo (IA Local / Motor Clínico)
+                // Línea 2: Fecha y tipo de muestra
+                Text(
+                    text = "$formattedDate • $humanSampleType",
+                    fontSize = 11.sp,
+                    color = ClinicalTextSecondary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+
+                // Línea 3: Fila dedicada de etiquetas compactas (sin saltos de línea)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Badge 1: Modo / Modelo corto
                     Box(
                         modifier = Modifier
                             .background(
                                 if (item.isNeuralInference) ClinicalContainerHigh else Color(0xFFFFF3E0),
                                 RoundedCornerShape(6.dp)
                             )
-                            .padding(horizontal = 5.dp, vertical = 2.dp)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = if (item.isNeuralInference) "IA Local" else "Motor Clínico",
+                            text = if (item.isNeuralInference) "IA • $shortModelLabel" else "Motor Clínico",
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (item.isNeuralInference) ClinicalPrimary else Color(0xFFE65100)
+                            color = if (item.isNeuralInference) ClinicalPrimary else Color(0xFFE65100),
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    // Etiqueta de Fotos (4 Fotos / 1 Foto)
+                    // Badge 2: Cantidad de tomas
                     Box(
                         modifier = Modifier
                             .background(ClinicalContainerLow, RoundedCornerShape(6.dp))
-                            .padding(horizontal = 5.dp, vertical = 2.dp)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = if (item.isMultiShot) "${item.shotCount} Fotos" else "1 Foto",
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
-                            color = ClinicalPrimary
+                            color = ClinicalPrimary,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
+
+                    // Badge 3: Sincronización (Nube / Local)
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                if (item.isSynced) Color(0xFFE8F5E9) else Color(0xFFF1F5F9),
+                                RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = if (item.isSynced) "Nube" else "Local",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (item.isSynced) SeverityNormal else Color(0xFF64748B),
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(3.dp))
-
-                Text(
-                    text = "$formattedDate • $humanSampleType",
-                    fontSize = 11.sp,
-                    color = ClinicalTextSecondary
-                )
-
-                Spacer(modifier = Modifier.height(3.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Estado de sincronización en la nube vs almacenamiento local
-                    if (item.isSynced) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFFE8F5E9), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 4.dp, vertical = 1.dp)
-                        ) {
-                            Text(
-                                text = "Nube",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = SeverityNormal
-                            )
-                        }
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFFF1F5F9), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 4.dp, vertical = 1.dp)
-                        ) {
-                            Text(
-                                text = "Local",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF64748B)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(6.dp))
-
-                    Text(
-                        text = "${item.modelUsed} (${item.inferenceTimeMs} ms)",
-                        fontSize = 10.sp,
-                        color = ClinicalTextSecondary
-                    )
-                }
             }
 
-            // Botón de eliminación individual
+            Spacer(modifier = Modifier.width(6.dp))
+
+            // 3. Acciones derechas perfectamente alineadas al centro
             IconButton(
                 onClick = onDeleteClick,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(34.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.DeleteOutline,
                     contentDescription = "Eliminar chequeo",
                     tint = Color(0xFFEF4444),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(19.dp)
                 )
             }
 
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
-                tint = ClinicalTextSecondary.copy(alpha = 0.4f),
+                tint = ClinicalTextSecondary.copy(alpha = 0.45f),
                 modifier = Modifier.size(18.dp)
             )
         }

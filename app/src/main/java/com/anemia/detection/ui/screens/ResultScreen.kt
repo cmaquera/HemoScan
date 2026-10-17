@@ -478,18 +478,6 @@ fun ResultScreen(
 
                     DataRow("Método", result.inferenceMethod)
                     DataRow("Modelo", result.modelUsed)
-                    if (result.isMultiShot) {
-                        DataRow("Protocolo", "Multi-Toma Binocular (${result.shotCount} fotos)")
-                        result.standardError?.let {
-                            DataRow("Margen de Error (SE)", "±$it g/dL")
-                        }
-                        DataRow("Filtro Outliers", "Activo (Rechazo automático)")
-                    } else {
-                        DataRow("Protocolo", "Toma Única Rápida")
-                    }
-                    DataRow("Tiempo de Inferencia", "${result.inferenceTimeMs} ms")
-                    DataRow("Confianza Algoritmo", "${(result.confidence * 100).toInt()}%")
-                    DataRow("Muestra", result.sampleType)
                 }
             }
 
