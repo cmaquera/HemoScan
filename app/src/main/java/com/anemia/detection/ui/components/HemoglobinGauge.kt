@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anemia.detection.models.AnemiaSeverity
+import com.anemia.detection.theme.BrandCoral
 import com.anemia.detection.theme.ClinicalCardLowest
 import com.anemia.detection.theme.ClinicalOnSurface
 import com.anemia.detection.theme.ClinicalPrimary
@@ -104,7 +105,7 @@ fun HemoglobinGauge(
                     Icon(
                         imageVector = Icons.Default.Bloodtype,
                         contentDescription = null,
-                        tint = ClinicalPrimary,
+                        tint = BrandCoral,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(6.dp))

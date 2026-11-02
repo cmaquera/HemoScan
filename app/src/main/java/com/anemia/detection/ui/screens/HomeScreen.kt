@@ -1,6 +1,7 @@
 package com.anemia.detection.ui.screens
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,9 +25,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.anemia.detection.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
@@ -70,6 +76,7 @@ import androidx.compose.ui.unit.sp
 import com.anemia.detection.models.AnemiaSeverity
 import com.anemia.detection.models.DetectionResult
 import com.anemia.detection.storage.HistoryRepository
+import com.anemia.detection.theme.BrandCoral
 import com.anemia.detection.theme.ClinicalBackground
 import com.anemia.detection.theme.ClinicalCardLowest
 import com.anemia.detection.theme.ClinicalContainer
@@ -140,48 +147,21 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo_hd),
+                            contentDescription = "Logo HemoScan AI",
                             modifier = Modifier
-                                .size(34.dp)
-                                .background(ClinicalContainerHigh, RoundedCornerShape(10.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MedicalServices,
-                                contentDescription = null,
-                                tint = ClinicalPrimary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Fit
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    "HemoScan AI",
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 18.sp,
-                                    color = ClinicalOnSurface
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .background(ClinicalContainerHigh, RoundedCornerShape(12.dp))
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        "Inicio",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = ClinicalPrimary
-                                    )
-                                }
-                            }
-                            Text(
-                                "Salud en el hogar • 100% Privado",
-                                fontSize = 11.sp,
-                                color = ClinicalTextSecondary
-                            )
-                        }
+                        Text(
+                            "HemoScan AI",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 18.sp,
+                            color = ClinicalOnSurface
+                        )
                     }
                 },
                 actions = {
@@ -207,7 +187,6 @@ fun HomeScreen(
             // 1. Encabezado Claro (Centrado en el usuario del teléfono)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -229,25 +208,6 @@ fun HomeScreen(
                             color = ClinicalOnSurfaceVariant
                         )
                     }
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { onOpenSettings() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = null,
-                        tint = ClinicalPrimary,
-                        modifier = Modifier.size(15.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        "Ajustes de Perfil",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ClinicalPrimary
-                    )
                 }
             }
 
@@ -296,7 +256,7 @@ fun HomeScreen(
                                 Icon(
                                     imageVector = Icons.Default.Favorite,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = BrandCoral,
                                     modifier = Modifier.size(13.dp)
                                 )
                                 Spacer(modifier = Modifier.width(5.dp))
@@ -353,11 +313,11 @@ fun HomeScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -462,7 +422,7 @@ fun HomeScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Person,
+                                    imageVector = Icons.AutoMirrored.Filled.Assignment,
                                     contentDescription = null,
                                     tint = ClinicalPrimary,
                                     modifier = Modifier.size(20.dp)

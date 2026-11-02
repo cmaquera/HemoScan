@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="app_icon.jpg" width="128" height="128" style="border-radius: 28px;" alt="HemoScan AI Icon" />
+  <img src="assets/branding/app_icon.jpg" width="128" height="128" style="border-radius: 28px;" alt="HemoScan AI Icon" />
 </p>
 
 # HemoScan AI — Detección No Invasiva de Anemia en Android (Kotlin)
@@ -7,12 +7,13 @@
 Aplicación móvil nativa en **Kotlin** con **Jetpack Compose** y **TensorFlow Lite** para la detección y estimación no invasiva de hemoglobina y anemia en tiempo real, diseñada con arquitectura **Offline-First**, lenguaje comprensible para usuarios no médicos y optimizada para operar de forma privada en el propio dispositivo.
 
 > **Documentación del Proyecto:**
-> - [Paper Científico y Arquitectura Técnica (PAPER.md)](PAPER.md)
-> - [Historias de Usuario y Criterios BDD (USER_STORIES.md)](USER_STORIES.md)
+> - [Landing de HemoScan AI: vista previa y preparación (landing/README.md)](landing/README.md)
+> - [Paper Científico y Arquitectura Técnica (docs/PAPER.md)](docs/PAPER.md)
+> - [Historias de Usuario y Criterios BDD (docs/USER_STORIES.md)](docs/USER_STORIES.md)
 > - [Guía de Contribución para Desarrolladores (CONTRIBUTING.md)](CONTRIBUTING.md)
 > - [Pipeline de Entrenamiento ML y Datasets (training/README.md)](training/README.md)
 > - [Memoria de Calidad Clean Code y SonarQube (.quality/README.md)](.quality/README.md)
-> - [Aviso Médico y Exención de Responsabilidad (DISCLAIMER.md)](DISCLAIMER.md)
+> - [Aviso Médico y Exención de Responsabilidad (docs/DISCLAIMER.md)](docs/DISCLAIMER.md)
 > - [Licencia MIT (LICENSE)](LICENSE)
 
 ---
@@ -99,13 +100,25 @@ anemia-detection/
 │   │   │   └── mobilenetv3_anemia_quant.tflite # 1.16 MB (AUC 90.88%)
 │   │   └── AndroidManifest.xml
 │   └── build.gradle.kts
-├── .quality/                                 # Memoria canónica de auditoría Clean Code
-│   ├── README.md                             # Resumen de calidad y Quality Gate
-│   ├── quality-tech-debt.md                  # Tablero maestro de deuda técnica
-│   ├── metrics.md                            # Métricas de cobertura, complejidad y recursos
-│   ├── findings/                             # Registro individual de hallazgos
-│   └── standards/                            # Reglas SonarQube cacheadas (Kotlin)
-└── HemoScan_AI_debug.apk                     # APK compilado listo para instalar
+├── assets/                                   # Recursos gráficos oficiales y capturas para documentación/landing
+│   ├── branding/app_icon.jpg                 # Ícono oficial de alta resolución
+│   └── screenshots/                          # Capturas reales actualizadas de la aplicación
+├── docs/                                     # Documentación técnica, clínica y funcional
+│   ├── PAPER.md                              # Whitepaper científico y arquitectura técnica
+│   ├── USER_STORIES.md                       # Historias de usuario y criterios BDD
+│   └── DISCLAIMER.md                         # Aviso médico y exención de responsabilidad
+├── dataset/                                  # Catálogo unificado de metadatos clínicos
+├── training/                                 # Pipeline ML de entrenamiento y cuantización TFLite
+├── scripts/                                  # Scripts utilitarios del proyecto
+│   └── generate_launcher_icons.py            # Generador de íconos adaptativos por densidad
+├── releases/                                 # Binarios compilados listos para instalación
+│   └── HemoScan_AI_debug.apk                 # APK compilado listo para instalar
+└── .quality/                                 # Memoria canónica de auditoría Clean Code
+    ├── README.md                             # Resumen de calidad y Quality Gate
+    ├── quality-tech-debt.md                  # Tablero maestro de deuda técnica
+    ├── metrics.md                            # Métricas de cobertura, complejidad y recursos
+    ├── findings/                             # Registro individual de hallazgos
+    └── standards/                            # Reglas SonarQube cacheadas (Kotlin)
 ```
 
 ---
@@ -130,7 +143,7 @@ El proyecto fue auditado y saneado bajo directrices **Clean Code de SonarQube** 
 ```powershell
 .\gradlew.bat assembleDebug
 ```
-El archivo binario se genera en `app/build/outputs/apk/debug/app-debug.apk` y se copia en la raíz del repositorio como [`HemoScan_AI_debug.apk`](HemoScan_AI_debug.apk).
+El archivo binario se genera en `app/build/outputs/apk/debug/app-debug.apk` y se copia en [`releases/HemoScan_AI_debug.apk`](releases/HemoScan_AI_debug.apk).
 
 ### 2. Ejecutar Pruebas Unitarias
 ```powershell
@@ -140,7 +153,7 @@ El archivo binario se genera en `app/build/outputs/apk/debug/app-debug.apk` y se
 
 ### 3. Instalar en Dispositivo Físico o Emulador
 ```powershell
-adb install -r HemoScan_AI_debug.apk
+adb install -r releases/HemoScan_AI_debug.apk
 ```
 
 ---

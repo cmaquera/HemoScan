@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#155eef">
+  <meta name="description" content="Conoce HemoScan AI: una app experimental para Android que estima la hemoglobina a partir de fotografías, con procesamiento local y capturas guiadas.">
+  <title>HemoScan AI · Un primer vistazo a tu bienestar</title>
+  <link rel="icon" href="assets/app-icon.webp" type="image/webp">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Ir al contenido</a>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="#inicio" aria-label="HemoScan AI, inicio"><img src="assets/app-icon.webp" width="42" height="42" alt=""><span>HemoScan <b>AI</b></span></a>
+      <nav aria-label="Navegación principal">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#app">La app</a>
+        <a href="#preguntas">Preguntas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="status-dot"></span> SALUD DIGITAL, MÁS CERCA DE TI</div>
+          <h1 id="hero-title">Un primer vistazo<br>a tu <span>bienestar.</span></h1>
+          <p class="hero-description">Conoce una estimación de tu hemoglobina desde la cámara de tu Android. Con fotos guiadas y una IA que trabaja en tu teléfono.</p>
+          <div class="hero-actions"><a class="button" href="https://github.com/cmaquera/HemoScan/releases/download/v0.0.2/HemoScan-AI-v0.0.2.apk" download><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg>Descargar APK</a><a class="text-link" href="#como-funciona">Así funciona <span aria-hidden="true">↗</span></a></div>
+          <div class="hero-benefits"><span>✓ Sin pinchazos</span><span>✓ Análisis sin internet</span><span>✓ Sin crear una cuenta</span></div>
+          <p class="medical-note">Herramienta experimental de orientación. No sustituye un análisis de laboratorio ni una evaluación médica.</p>
+        </div>
+        <div class="hero-visual">
+          <div class="orbit orbit-one" aria-hidden="true"></div><div class="orbit orbit-two" aria-hidden="true"></div>
+          <div class="visual-label"><span class="status-dot"></span> TU CHEQUEO, EN TU TELÉFONO</div>
+          <button class="phone hero-phone" type="button" data-screen="0" aria-label="Ampliar captura de la pantalla de inicio"><img src="assets/01-home-dashboard.webp" width="1220" height="2712" alt="Inicio de HemoScan AI con el botón para iniciar un chequeo y el resumen del último resultado" fetchpriority="high"></button>
+          <div class="floating-card local-card"><span class="icon-box"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 8 3v5c0 5-8 10-8 10S4 16 4 11V6l8-3Z"/><path d="m8 11 3 3 5-6"/></svg></span><div><strong>IA en tu dispositivo</strong><span>Tus fotos se procesan aquí.</span></div></div>
+          <div class="floating-card guide-card"><span class="coral-dot" aria-hidden="true">♥</span><div><strong>Un paso a la vez</strong><span>Te acompañamos en cada foto.</span></div></div>
+          <span class="screenshot-caption">Interfaz real · Android · v0.0.5</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-strip"><div class="container trust-content"><span>Diseñada para acompañarte</span><span><b>01</b> Captura guiada</span><span><b>02</b> Procesamiento local</span><span><b>03</b> Historial en tu teléfono</span></div></div>
+
+    <section class="section container" id="como-funciona" aria-labelledby="steps-title">
+      <div class="section-heading"><div><p class="eyebrow">UN PROCESO SENCILLO</p><h2 id="steps-title">De una foto a una<br>primera orientación.</h2></div><p>No necesitas conocer términos médicos.<br>La app te guía durante el chequeo.</p></div>
+      <div class="steps">
+        <article class="step"><span class="step-number">01 <span aria-hidden="true">↗</span></span><h3>Elige tu chequeo</h3><p>Selecciona el interior del párpado inferior o una uña sin esmalte. Usa el modo guiado de cuatro fotos o el rápido de una foto.</p><span class="step-tag">A tu ritmo</span></article>
+        <article class="step"><span class="step-number">02 <span aria-hidden="true">↗</span></span><h3>Sigue la guía visual</h3><p>Consulta cómo encuadrar la zona y busca una iluminación uniforme. La app revisa la calidad de las imágenes antes del análisis.</p><span class="step-tag">Con ayuda en cada toma</span></article>
+        <article class="step"><span class="step-number">03 <span aria-hidden="true">↗</span></span><h3>Consulta la estimación</h3><p>Revisa el valor orientativo de hemoglobina, los detalles de la captura y los pasos sugeridos. El chequeo queda en tu historial local.</p><span class="step-tag">Información para acompañarte</span></article>
+      </div>
+    </section>
+
+    <section class="app-section" id="app" aria-labelledby="app-title">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow">CONOCE HEMOSCAN AI</p><h2 id="app-title">Así se ve cuidarte<br>con más información.</h2></div><p>Explora las pantallas de la app.<br>Capturas reales de la versión 0.0.5.</p></div>
+        <div class="app-explorer">
+          <div class="feature-list" role="group" aria-label="Explorar funciones de la aplicación">
+            <button class="feature active" type="button" data-feature="0" aria-pressed="true"><span class="feature-index">01</span><span><strong>Un inicio más claro</strong><span>Tu último chequeo y lo que necesitas, a mano.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+            <button class="feature" type="button" data-feature="4" aria-pressed="false"><span class="feature-index">02</span><span><strong>Fotos con acompañamiento</strong><span>Dos modos de captura y una guía paso a paso.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+            <button class="feature" type="button" data-feature="6" aria-pressed="false"><span class="feature-index">03</span><span><strong>Resultados que puedes leer</strong><span>Una estimación visual con detalles del análisis.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+            <button class="feature" type="button" data-feature="8" aria-pressed="false"><span class="feature-index">04</span><span><strong>Tu historial, contigo</strong><span>Consulta tus chequeos o elimina los que elijas.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+            <button class="feature" type="button" data-feature="3" aria-pressed="false"><span class="feature-index">05</span><span><strong>Pequeños hábitos, más contexto</strong><span>Una guía de alimentos con hierro dentro de la app.</span></span><span class="feature-arrow" aria-hidden="true">↗</span></button>
+          </div>
+          <div class="feature-preview">
+            <span class="preview-pill">UNA MIRADA AL INTERIOR</span>
+            <button class="phone preview-phone" type="button" data-screen="0" id="preview-button" aria-label="Ampliar captura de Inicio"><img id="preview-image" src="assets/01-home-dashboard.webp" width="1220" height="2712" alt="Pantalla de inicio de HemoScan AI" loading="lazy"></button>
+            <p id="preview-caption" aria-live="polite">Inicio · Tu chequeo personal</p><span class="preview-hint">Toca la pantalla para ampliarla <span aria-hidden="true">↗</span></span>
+          </div>
+        </div>
+        <details class="gallery-details"><summary>Ver las 12 capturas de la aplicación <span aria-hidden="true">+</span></summary><div class="gallery" id="gallery"></div></details>
+      </div>
+    </section>
+
+    <section class="section container" aria-labelledby="privacy-title">
+      <div class="privacy-panel">
+        <div class="privacy-copy"><p class="eyebrow">TECNOLOGÍA QUE SE QUEDA CERCA</p><h2 id="privacy-title">La inteligencia está<br>en tu teléfono.</h2><p>El análisis se ejecuta en el propio dispositivo. No necesitas una cuenta ni conexión a internet para realizar un chequeo.</p><a class="text-link" href="https://github.com/cmaquera/HemoScan" target="_blank" rel="noopener noreferrer">Explorar el proyecto en GitHub <span aria-hidden="true">↗</span></a></div>
+        <div class="privacy-facts"><div><span class="fact-symbol" aria-hidden="true">↳</span><div><h3>IA que se adapta</h3><p>Selección automática entre MobileNetV3 y HemaViT según los recursos del dispositivo. También puedes elegir el motor en Ajustes.</p></div></div><div><span class="fact-symbol" aria-hidden="true">⌁</span><div><h3>Historial local</h3><p>Los chequeos se guardan en el almacenamiento privado de la app. Tú decides si compartes un resumen con otras aplicaciones.</p></div></div><div><span class="fact-symbol" aria-hidden="true">◎</span><div><h3>Más claridad sobre el análisis</h3><p>Consulta el modelo utilizado, el número de tomas y la información de tu dispositivo desde la aplicación.</p></div></div></div>
+      </div>
+    </section>
+
+    <section class="section faq-section container" id="preguntas" aria-labelledby="faq-title">
+      <div><p class="eyebrow">ANTES DE EMPEZAR</p><h2 id="faq-title">Lo que conviene<br>tener claro.</h2><p class="faq-intro">Una herramienta de orientación empieza por explicar sus límites.</p></div>
+      <div class="faq-list">
+        <details><summary>¿HemoScan AI diagnostica anemia?<span aria-hidden="true">+</span></summary><p>No. Es una herramienta experimental de cribado preliminar. Sus estimaciones no constituyen un diagnóstico y no sustituyen un hemograma ni una evaluación profesional. No es un dispositivo médico certificado.</p></details>
+        <details><summary>¿Necesito internet o una cuenta?<span aria-hidden="true">+</span></summary><p>No para realizar el análisis y consultar el historial. Los modelos y el procesamiento están en el teléfono. Compartir un resumen con otra app es una acción manual y puede depender de la conexión de esa app.</p></details>
+        <details><summary>¿Qué teléfono necesito?<span aria-hidden="true">+</span></summary><p>La versión actual requiere Android 7.0 o superior. El motor automático considera la memoria RAM y los núcleos del teléfono para seleccionar el modelo. La experiencia puede variar según el dispositivo y la calidad de la captura.</p></details>
+        <details><summary>¿Qué muestran estas capturas?<span aria-hidden="true">+</span></summary><p>Son pantallas reales de la versión 0.0.5. Los valores de hemoglobina y las clasificaciones que aparecen pertenecen a esas capturas de demostración; no representan una medición tuya ni garantizan un resultado.</p></details>
+        <details><summary>¿Está disponible en Google Play?<span aria-hidden="true">+</span></summary><p>Este proyecto distribuye un APK oficial de prueba (versión v0.0.2). Puedes descargarlo directamente en esta página desde GitHub Releases o revisar el código fuente completo en el repositorio.</p></details>
+      </div>
+    </section>
+
+    <section class="download-section" id="descargar" aria-labelledby="download-title"><div class="container download-inner"><div><p class="eyebrow">CONOCE EL PROYECTO</p><h2 id="download-title">Tu próximo paso:<br>explorar HemoScan AI.</h2><p>Una experiencia para Android, diseñada para acercarte<br>a la información sobre tu bienestar.</p></div><div class="download-actions"><a class="button button-white" href="https://github.com/cmaquera/HemoScan/releases/download/v0.0.2/HemoScan-AI-v0.0.2.apk" download><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg>Descargar APK <span aria-hidden="true">↗</span></a><span>Android 7.0+ · Versión v0.0.2 (37.3 MB)</span><a href="https://github.com/cmaquera/HemoScan/releases/tag/v0.0.2" target="_blank" rel="noopener noreferrer">Ver Release v0.0.2 en GitHub ↗</a></div></div></section>
+    <aside class="disclaimer container"><span class="disclaimer-icon" aria-hidden="true">i</span><p><strong>Información, con responsabilidad.</strong> HemoScan AI es un proyecto experimental. Las estimaciones no reemplazan una consulta médica ni los exámenes de laboratorio. No inicies, cambies ni suspendas tratamientos basándote en la app. <a href="aviso-medico.html">Leer el aviso médico completo ↗</a></p></aside>
+  </main>
+
+  <footer class="footer container"><a class="brand" href="#inicio"><img src="assets/app-icon.webp" width="32" height="32" alt=""><span>HemoScan <b>AI</b></span></a><p>Tecnología cercana. Información para cuidarte.</p><a href="documents/LICENSE.txt">Código abierto · Licencia MIT ↗</a></footer>
+
+  <dialog id="screenshot-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><div><span id="dialog-count"></span><h2 id="dialog-title">Captura de la aplicación</h2></div><button class="icon-button" id="close-dialog" type="button" aria-label="Cerrar captura">×</button></div><div class="dialog-image-wrap"><img id="dialog-image" src="assets/01-home-dashboard.webp" width="1220" height="2712" alt="Captura de HemoScan AI"></div><div class="dialog-footer"><button class="icon-button" id="previous-screen" type="button" aria-label="Captura anterior">←</button><p>Captura real · v0.0.5</p><button class="icon-button" id="next-screen" type="button" aria-label="Captura siguiente">→</button></div></dialog>
+</body>
+</html>

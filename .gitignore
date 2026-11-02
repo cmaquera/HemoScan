@@ -49,9 +49,11 @@ dataset/fingernail/
 stitch_hemoscan_ai_mobile_app.zip
 stitch_design/
 
-# Temporary test screen captures from emulator
+# Temporary test screen captures in root
+/*.png
 screenshot_*.png
 screen_*.png
 validation_*.png
 updated_*.png
 emulator_*.png
+phone_*.png

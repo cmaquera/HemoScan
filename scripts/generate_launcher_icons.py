@@ -1,7 +1,7 @@
 import os
 from PIL import Image, ImageDraw
 
-def generate_icons(source_path="app_icon.jpg", res_dir="app/src/main/res"):
+def generate_icons(source_path="assets/branding/app_icon.jpg", res_dir="app/src/main/res"):
     if not os.path.exists(source_path):
         print(f"Error: {source_path} does not exist.")
         return

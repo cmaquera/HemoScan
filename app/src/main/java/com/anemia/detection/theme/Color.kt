@@ -2,28 +2,33 @@ package com.anemia.detection.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Tokens de Diseño de Stitch: Clinical Precision AI
-val ClinicalPrimary = Color(0xFF1A56DB) // Azul Clínico Primario
-val ClinicalPrimaryDark = Color(0xFF0E3A99) // Azul Clínico Profundo
-val ClinicalPrimaryContainer = Color(0xFF003FB1)
-val ClinicalSecondary = Color(0xFF3658B7)
-val ClinicalSecondaryContainer = Color(0xFF7D9CFF)
-val ClinicalTertiary = Color(0xFF004D77)
+// Tokens de Diseño: HemoScan AI (Salud Accesible & Amable)
+val ClinicalPrimary = Color(0xFF155EEF) // Azul Botones Principales y Escaneo (#155EEF)
+val ClinicalPrimaryDark = Color(0xFF0D4CD3) // Azul Profundo de Soporte
+val ClinicalPrimaryContainer = Color(0xFFDCE9FE)
+val ClinicalSecondary = Color(0xFF2E6FF2)
+val ClinicalSecondaryContainer = Color(0xFFDCE9FE)
+val ClinicalTertiary = Color(0xFF004085)
 val ClinicalAiCyan = Color(0xFF0284C7) // Cian de Inferencia IA
 
-val ClinicalSurface = Color(0xFFF8F9FF)
-val ClinicalBackground = Color(0xFFF8FAFC)
-val ClinicalCardLowest = Color(0xFFFFFFFF)
-val ClinicalContainerLow = Color(0xFFEFF4FF)
-val ClinicalContainer = Color(0xFFE5EEFF)
-val ClinicalContainerHigh = Color(0xFFDCE9FF)
-val ClinicalContainerHighest = Color(0xFFD3E4FE)
+// Gota y Acentos Puntuales
+val BrandCoral = Color(0xFFEF4B5A) // Coral Gota y Acentos Puntuales (#EF4B5A)
+val BrandCoralContainer = Color(0xFFFFECEE)
+val BrandCoralDark = Color(0xFFD92D3E)
 
-val ClinicalOnSurface = Color(0xFF0B1C30)
-val ClinicalOnSurfaceVariant = Color(0xFF434654)
-val ClinicalTextSecondary = Color(0xFF64748B)
-val ClinicalOutline = Color(0xFF737686)
-val ClinicalOutlineVariant = Color(0xFFC3C5D7)
+val ClinicalSurface = Color(0xFFFFFFFF) // Tarjetas y Superficies Blanco (#FFFFFF)
+val ClinicalBackground = Color(0xFFEDF4FF) // Fondo General Azul Muy Claro (#EDF4FF)
+val ClinicalCardLowest = Color(0xFFFFFFFF) // Tarjetas Blanco Puro (#FFFFFF)
+val ClinicalContainerLow = Color(0xFFF4F8FF)
+val ClinicalContainer = Color(0xFFDDE9FD)
+val ClinicalContainerHigh = Color(0xFFD3E3FD)
+val ClinicalContainerHighest = Color(0xFFC8DCFD)
+
+val ClinicalOnSurface = Color(0xFF142744) // Títulos y Texto Azul Oscuro (#142744)
+val ClinicalOnSurfaceVariant = Color(0xFF3B4E6B)
+val ClinicalTextSecondary = Color(0xFF566A87)
+val ClinicalOutline = Color(0xFF8DA4C4)
+val ClinicalOutlineVariant = Color(0xFFCBD5E1)
 
 // Semántica de Severidad Clínica
 val SeverityNormal = Color(0xFF059669)
