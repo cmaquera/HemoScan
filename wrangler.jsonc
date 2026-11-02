@@ -3,7 +3,6 @@
   "name": "hemoscan",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./landing",
-    "binding": "ASSETS"
+    "directory": "./landing"
   }
 }
